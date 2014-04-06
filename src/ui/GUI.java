@@ -2,9 +2,17 @@ package ui;
 
 import javax.swing.JFrame;
 
+/**
+ * The graphical user interface for the game.
+ * 
+ * @author littlewoo
+ */
 public class GUI {
 	private JFrame frame;
 	
+	/**
+	 * Construct a new GUI.
+	 */
 	public GUI() {
 		frame = new JFrame();
 		BoardPanel panel = new BoardPanel();
