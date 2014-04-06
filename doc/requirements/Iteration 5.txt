@@ -1,0 +1,12 @@
+Iteration 5:
+
+Movement
+
+Deadline: 11 May 2014
+
+Features:
+
+-Firefighters get 4AP per turn
+-Each square moved costs 1AP
+-Walls can be placed between squares (static class provides board, including walls), and block movement
+-When it is a firefighter's turn to move, movement is shown by circles marking squares. Clicking on a circle moves the firefighter there, and deducts the correct number of AP.

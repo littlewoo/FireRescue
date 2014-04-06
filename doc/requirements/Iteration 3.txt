@@ -1,0 +1,14 @@
+Iteration 3:
+
+Fire!
+
+Deadline: 27 April 2014
+
+Features:
+
+Right click on a square to advance fire on that square
+	-if no fire, add smoke
+	-if smoke, change to fire
+	-if fire, then explosion
+		-fire added in each of four directions
+	-after all fire added, any smoke adjacent to fire is changed to fire

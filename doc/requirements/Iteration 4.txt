@@ -1,0 +1,12 @@
+Iteration 4:
+
+Turns
+
+Deadline: 4 May 2014
+
+Features:
+
+-Select a number of players at beginning of game
+-that number of firefighters are placed randomly on board
+-each firefighter takes it in turns to move, then fire is advanced
+

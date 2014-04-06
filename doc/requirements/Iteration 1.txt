@@ -1,0 +1,14 @@
+Iteration 1:
+
+The Beginning
+
+Deadline: Sun 13 April 2014
+
+Board displayed in window user interface:
+	-plain colour background
+	-white 10x8 grid
+
+Token placed in board, and displayed
+	-Token simple - letter T for example
+	-click a square to place a token, no checking for different types of tokens
+	

@@ -1,0 +1,11 @@
+Iteration 2:
+
+The Player Token
+
+Deadline: 20 April 2014
+
+Features:
+
+Player Token
+	-A specific player token type, which can be added to the board
+	-clicking on a square on the board moves the player token 
