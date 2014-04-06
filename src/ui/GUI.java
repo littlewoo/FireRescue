@@ -1,5 +1,7 @@
 package ui;
 
+import game.Game;
+
 import javax.swing.JFrame;
 
 /**
@@ -15,7 +17,7 @@ public class GUI {
 	 */
 	public GUI() {
 		frame = new JFrame();
-		BoardPanel panel = new BoardPanel();
+		BoardPanel panel = new BoardPanel(new Game());
 		frame.getContentPane().add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();

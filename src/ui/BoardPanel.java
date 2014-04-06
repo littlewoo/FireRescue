@@ -1,5 +1,10 @@
 package ui;
 
+import game.Board;
+import game.Board.TokenChangeListener;
+import game.Game;
+import game.Token;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -16,14 +21,14 @@ import javax.swing.JPanel;
  * 
  * @author littlewoo
  */
-public class BoardPanel extends JPanel {
+public class BoardPanel extends JPanel implements TokenChangeListener {
 	
 	private static final long serialVersionUID = 6945410881583290262L;
 	
 	private final static int WIDTH = 10;
 	private final static int HEIGHT = 8;
 	
-	private final static int CELL_SIZE = 100;
+	public final static int CELL_SIZE = 100;
 	private final static int MARGIN_SIZE = 25;
 	private final static int LEFT_MARGIN = MARGIN_SIZE;
 	private final static int RIGHT_MARGIN = MARGIN_SIZE + CELL_SIZE * WIDTH;
@@ -35,7 +40,7 @@ public class BoardPanel extends JPanel {
 	/**
 	 * Make a new BoardPanel
 	 */
-	public BoardPanel() {
+	public BoardPanel(Game game) {
 		
 		setPreferredSize(
 				new Dimension(MARGIN_SIZE + WIDTH * CELL_SIZE + MARGIN_SIZE, 
@@ -52,6 +57,10 @@ public class BoardPanel extends JPanel {
 				}
 			}			
 		});
+		
+		Board b = game.getBoard();
+		b.addTokenChangeListener(this);
+		addSelectSquareListener(b);
 	}
 	
 	/**
@@ -145,5 +154,13 @@ public class BoardPanel extends JPanel {
 		 * @param y the y index of the selected square
 		 */
 		public void onSelectSquare(int x, int y);
+	}
+
+	@Override
+	public void onTokenChange(int x, int y, List<Token> tokens) {
+		for (Token t : tokens) {
+			TokenDrawer.drawToken((Graphics2D) getGraphics(), 
+					LEFT_MARGIN+CELL_SIZE*x+CELL_SIZE/2, TOP_MARGIN+CELL_SIZE*y+CELL_SIZE/2, t);		
+		}
 	}
 }
