@@ -1,6 +1,6 @@
 Iteration 5:
 
-Movement
+Moving around
 
 Deadline: 11 May 2014
 
