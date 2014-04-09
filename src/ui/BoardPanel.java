@@ -16,6 +16,9 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import ui.drawing.GenericTokenDrawer;
+import ui.drawing.TokenDrawer;
+
 /**
  * The panel showing the board.
  * 
@@ -159,8 +162,8 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	@Override
 	public void onTokenChange(int x, int y, List<Token> tokens) {
 		for (Token t : tokens) {
-			TokenDrawer.drawToken((Graphics2D) getGraphics(), 
-					LEFT_MARGIN+CELL_SIZE*x+CELL_SIZE/2, TOP_MARGIN+CELL_SIZE*y+CELL_SIZE/2, t);		
+			new GenericTokenDrawer("T", Color.BLUE).draw((Graphics2D) getGraphics(), 
+					LEFT_MARGIN+CELL_SIZE*x+CELL_SIZE/2, TOP_MARGIN+CELL_SIZE*y+CELL_SIZE/2);		
 		}
 	}
 }
