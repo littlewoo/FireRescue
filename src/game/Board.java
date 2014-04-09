@@ -63,6 +63,6 @@ public class Board implements SelectSquareListener {
 	@Override
 	public void onSelectSquare(int x, int y) {
 		System.out.println("Board selecting square: " + x + ", " + y);
-		addToken(x, y, new PlayerToken("John", Color.BLUE));
+		addToken(x, y, new PlayerToken("Esther", Color.ORANGE));
 	}
 }
