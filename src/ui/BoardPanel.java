@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import ui.drawing.GenericTokenDrawer;
-import ui.drawing.TokenDrawer;
+import ui.drawing.TokenDrawingManager;
 
 /**
  * The panel showing the board.
@@ -39,6 +39,8 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	private final static int BOTTOM_MARGIN = MARGIN_SIZE + CELL_SIZE * HEIGHT;
 	
 	private List<SelectSquareListener> selectSquareListeners;
+	
+	private final TokenDrawingManager tokenDrawingManager;
 	
 	/**
 	 * Make a new BoardPanel
@@ -64,6 +66,8 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		Board b = game.getBoard();
 		b.addTokenChangeListener(this);
 		addSelectSquareListener(b);
+		
+		tokenDrawingManager = new TokenDrawingManager();
 	}
 	
 	/**
@@ -72,9 +76,10 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
-        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        super.paintComponent(g2);
         drawLines(g2);
+        tokenDrawingManager.drawAll(g2);
     }
 	
 	/**
@@ -162,8 +167,13 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	@Override
 	public void onTokenChange(int x, int y, List<Token> tokens) {
 		for (Token t : tokens) {
-			new GenericTokenDrawer("T", Color.BLUE).draw((Graphics2D) getGraphics(), 
-					LEFT_MARGIN+CELL_SIZE*x+CELL_SIZE/2, TOP_MARGIN+CELL_SIZE*y+CELL_SIZE/2);		
+			int xLoc = LEFT_MARGIN + CELL_SIZE * x + CELL_SIZE / 2;
+			int yLoc = TOP_MARGIN + CELL_SIZE * y + CELL_SIZE / 2;
+			
+			tokenDrawingManager.addToken(t);
+			tokenDrawingManager.updateTokenLocation(t, xLoc, yLoc);
+			
+			repaint();
 		}
 	}
 }

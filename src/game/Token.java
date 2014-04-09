@@ -1,12 +1,15 @@
 package game;
 
+import java.awt.Color;
+
+import ui.drawing.GenericTokenDrawer;
 import ui.drawing.TokenDrawer;
 
 
 public class Token {
 
 	public TokenDrawer getDrawer() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new GenericTokenDrawer("T", Color.GREEN);
 	}
 }

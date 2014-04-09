@@ -12,6 +12,18 @@ public abstract class TokenDrawer {
 	
 	protected static final Font tokenLabelFont = 
 			new Font(Font.MONOSPACED, Font.BOLD, 50);
+	
+	// the location of the token to be drawn
+	protected int x;
+	protected int y;
+	
+	public TokenDrawer() {
+	}
+	
+	public void updateLocation(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 		
 	/**
 	 * Draw a circular background of a token
@@ -24,7 +36,7 @@ public abstract class TokenDrawer {
 	 * @param bgColour the background colour of the circle
 	 * @param borderColour the colour of the border of the circle
 	 */
-	protected void drawCircleToken(Graphics2D g, int x, int y, int diameterPct,
+	protected void drawCircleToken(Graphics2D g, int diameterPct,
 								   Color bgColour, Color borderColour) {
 		int diameter = CELL_SIZE * diameterPct / 100;
 		int cLeft = x - diameter/2;
@@ -37,5 +49,5 @@ public abstract class TokenDrawer {
 		g.drawOval(cLeft, cTop, diameter, diameter);
 	}
 
-	public abstract void draw(Graphics2D g, int x, int y);
+	public abstract void draw(Graphics2D g);
 }

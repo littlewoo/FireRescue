@@ -37,8 +37,8 @@ public class GenericTokenDrawer extends TokenDrawer {
 	}
 	
 	@Override
-	public void draw(Graphics2D g, int x, int y) {
-		super.drawCircleToken(g, x, y, TOKEN_DIAMETER_PERCENTAGE, Color.WHITE, Color.RED);
+	public void draw(Graphics2D g) {
+		super.drawCircleToken(g, TOKEN_DIAMETER_PERCENTAGE, Color.WHITE, Color.RED);
 		g.setColor(symbolColour);
 		g.setFont(TOKEN_CHAR_FONT);
 		g.drawString(symbol, x+TOKEN_CHAR_X_OFFSET, y+TOKEN_CHAR_Y_OFFSET);
