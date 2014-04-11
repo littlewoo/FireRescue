@@ -1,6 +1,9 @@
 package game;
 
+import game.token.FireToken;
 import game.token.PlayerToken;
+import game.token.SmokeToken;
+import game.token.ThreatToken;
 import game.token.Token;
 
 import java.awt.Color;
@@ -10,11 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ui.BoardPanel;
 import ui.BoardPanel.SelectSquareListener;
 
 public class Board implements SelectSquareListener {
 	private Map<Point, List<Token>> tokenLayer;
 	private Map<Token, Point> tokenLocs;
+	private Map<Point, ThreatToken> fireLayer;
 	
 	private Token playerToken;
 	
@@ -23,6 +28,8 @@ public class Board implements SelectSquareListener {
 	public Board() {
 		tokenLayer = new HashMap<Point, List<Token>>();
 		tokenLocs = new HashMap<Token, Point>();
+		fireLayer = new HashMap<Point, ThreatToken>();
+		
 		for (int x=0; x<10; x++) {
 			for (int y=0; y<8; y++) {
 				Point p = new Point(x, y);
@@ -70,6 +77,34 @@ public class Board implements SelectSquareListener {
 		}
 	}
 	
+	private void advanceFire(int x, int y) {
+		Point p = new Point(x, y);
+		ThreatToken t = fireLayer.get(p);
+		if (t == null) {
+			addThreatToken(x, y, new SmokeToken());
+		} else if (t instanceof SmokeToken) {
+			removeThreatToken(t);
+			addThreatToken(x, y, new FireToken());
+		} else {
+			fireExplosion(x, y);
+		}
+	}
+	
+	private void fireExplosion(int x, int y) {
+		System.out.println("Explosion triggered at (" + x + "," + y + ")");
+	}
+
+	private void removeThreatToken(ThreatToken t) {
+		fireLayer.remove(t);
+		removeToken(t);		
+	}
+
+	private void addThreatToken(int x, int y, ThreatToken t) {
+		Point p = new Point(x, y);
+		fireLayer.put(p, t);
+		addToken(x, y, t);
+	}
+
 	public void addTokenChangeListener(TokenChangeListener listener) {
 		tokenChangeListeners.add(listener);
 	}
@@ -79,7 +114,11 @@ public class Board implements SelectSquareListener {
 	}
 
 	@Override
-	public void onSelectSquare(int x, int y) {
-		moveToken(x, y, playerToken);
+	public void onSelectSquare(int x, int y, int button) {
+		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
+			moveToken(x, y, playerToken);
+		} else {
+			advanceFire(x, y);
+		}
 	}
 }
