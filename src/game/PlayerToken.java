@@ -2,8 +2,8 @@ package game;
 
 import java.awt.Color;
 
-import ui.drawing.PlayerTokenDrawer;
-import ui.drawing.TokenDrawer;
+import ui.drawing.PlayerTokenPainter;
+import ui.drawing.TokenPainter;
 
 public class PlayerToken extends Token {
 	private final String name;
@@ -23,8 +23,8 @@ public class PlayerToken extends Token {
 	}
 	
 	@Override
-	public TokenDrawer getDrawer() {
-		return new PlayerTokenDrawer(name, colour);
+	public TokenPainter getPainter() {
+		return new PlayerTokenPainter(name, colour);
 	}
 
 }

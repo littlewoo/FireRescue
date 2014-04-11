@@ -11,11 +11,15 @@ import ui.BoardPanel.SelectSquareListener;
 
 public class Board implements SelectSquareListener {
 	private Map<Point, List<Token>> tokenLayer;
+	private Map<Token, Point> tokenLocs;
+	
+	private Token playerToken;
 	
 	private List<TokenChangeListener> tokenChangeListeners;
 	
 	public Board() {
 		tokenLayer = new HashMap<Point, List<Token>>();
+		tokenLocs = new HashMap<Token, Point>();
 		for (int x=0; x<10; x++) {
 			for (int y=0; y<8; y++) {
 				Point p = new Point(x, y);
@@ -24,20 +28,32 @@ public class Board implements SelectSquareListener {
 		}
 		
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
+		
+		playerToken = new PlayerToken("Esther", Color.GREEN);
+	}
+	
+	public void placePlayerToken() {
+		addToken(4,4,playerToken);
 	}
 	
 	public void addToken(int x, int y, Token t) {
 		Point p = new Point(x, y);
 		tokenLayer.get(p).add(t);
+		tokenLocs.put(t, p);
 		alertTokenChangeListeners(p);
 	}
 	
-	public void removeToken(int x, int y, Token t) {
-		Point p = new Point(x, y);
+	public void removeToken(Token t) {
+		Point p = tokenLocs.get(t);
 		boolean success = tokenLayer.get(p).remove(t);
 		if (success) {
 			alertTokenChangeListeners(p);
 		}
+	}
+	
+	public void moveToken(int x, int y, Token t) {
+		removeToken(t);
+		addToken(x,y,t);
 	}
 	
 	public List<Token> getTokensAt(int x, int y) {
@@ -61,7 +77,6 @@ public class Board implements SelectSquareListener {
 
 	@Override
 	public void onSelectSquare(int x, int y) {
-		System.out.println("Board selecting square: " + x + ", " + y);
-		addToken(x, y, new PlayerToken("Esther", Color.ORANGE));
+		moveToken(x, y, playerToken);
 	}
 }

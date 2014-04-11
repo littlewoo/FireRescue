@@ -2,14 +2,14 @@ package game;
 
 import java.awt.Color;
 
-import ui.drawing.GenericTokenDrawer;
-import ui.drawing.TokenDrawer;
+import ui.drawing.GenericTokenPainter;
+import ui.drawing.TokenPainter;
 
 
 public class Token {
 
-	public TokenDrawer getDrawer() {
+	public TokenPainter getPainter() {
 		
-		return new GenericTokenDrawer("T", Color.GREEN);
+		return new GenericTokenPainter("T", Color.GREEN);
 	}
 }

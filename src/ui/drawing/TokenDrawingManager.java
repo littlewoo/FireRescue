@@ -8,28 +8,28 @@ import java.util.Map;
 
 public class TokenDrawingManager {
 
-	private Map<Token, TokenDrawer> tokenDrawers;
+	private Map<Token, TokenPainter> tokenPainters;
 	
 	public TokenDrawingManager() {
-		tokenDrawers = new HashMap<Token, TokenDrawer>();
+		tokenPainters = new HashMap<Token, TokenPainter>();
 	}
 	
 	public void addToken(Token t) {
 		System.out.println("Adding token: " + t);
-		tokenDrawers.put(t, t.getDrawer());
+		tokenPainters.put(t, t.getPainter());
 	}
 	
 	public void removeToken(Token t) {
-		tokenDrawers.remove(t);
+		tokenPainters.remove(t);
 	}
 	
 	public void updateTokenLocation(Token t, int x, int y) {
 		System.out.println("Painting token: " + t);
-		tokenDrawers.get(t).updateLocation(x, y);
+		tokenPainters.get(t).updateLocation(x, y);
 	}
 	
 	public void drawAll(Graphics2D g) {
-		for (TokenDrawer drawer : tokenDrawers.values()) {
+		for (TokenPainter drawer : tokenPainters.values()) {
 			drawer.draw(g);			
 		}
 	}
