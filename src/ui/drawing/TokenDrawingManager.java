@@ -15,7 +15,6 @@ public class TokenDrawingManager {
 	}
 	
 	public void addToken(Token t) {
-		System.out.println("Adding token: " + t);
 		tokenPainters.put(t, t.getPainter());
 	}
 	
@@ -24,7 +23,6 @@ public class TokenDrawingManager {
 	}
 	
 	public void updateTokenLocation(Token t, int x, int y) {
-		System.out.println("Painting token: " + t);
 		tokenPainters.get(t).updateLocation(x, y);
 	}
 	

@@ -39,6 +39,14 @@ public class GenericTokenPainter extends TokenPainter {
 	@Override
 	public void draw(Graphics2D g) {
 		super.drawCircleToken(g, TOKEN_DIAMETER_PERCENTAGE, Color.WHITE, Color.RED);
+		drawCharacter(g);
+	}
+	
+	protected void drawCharacter(Graphics2D g) {
+		if (symbol.length() != 1) {
+			throw new IllegalArgumentException(
+								"Token character length must be exactly 1.");
+		}
 		g.setColor(symbolColour);
 		g.setFont(TOKEN_CHAR_FONT);
 		g.drawString(symbol, x+TOKEN_CHAR_X_OFFSET, y+TOKEN_CHAR_Y_OFFSET);
