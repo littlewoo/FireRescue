@@ -37,6 +37,10 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	private final static int TOP_MARGIN = MARGIN_SIZE;
 	private final static int BOTTOM_MARGIN = MARGIN_SIZE + CELL_SIZE * HEIGHT;
 	
+	public final static int LEFT_MOUSE_BUTTON = MouseEvent.BUTTON1;
+	public final static int MIDDLE_MOUSE_BUTTON = MouseEvent.BUTTON2;
+	public final static int RIGHT_MOUSE_BUTTON = MouseEvent.BUTTON3;
+	
 	private List<SelectSquareListener> selectSquareListeners;
 	
 	private final TokenDrawingManager tokenDrawingManager;
@@ -56,9 +60,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					respondToMouseClick(e.getX(), e.getY());
-				}
+				respondToMouseClick(e.getX(), e.getY(), e.getButton());
 			}			
 		});
 		
@@ -113,8 +115,9 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 * 
 	 * @param x the x coordinate within the panel of the click
 	 * @param y the y coordinate within the panel of the click
+	 * @param button the button used to click
 	 */
-	private void respondToMouseClick(int x, int y) {
+	private void respondToMouseClick(int x, int y, int button) {
 		if (x < LEFT_MARGIN || x > RIGHT_MARGIN || 
 			y < TOP_MARGIN || y > BOTTOM_MARGIN) {
 			System.out.println("Click outside boundaries: " + x + ", " + y);
@@ -123,7 +126,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 			y = y - TOP_MARGIN;
 			int xSquare = x / CELL_SIZE;
 			int ySquare = y / CELL_SIZE;
-			alertSelectSquareListeners(xSquare, ySquare);
+			alertSelectSquareListeners(xSquare, ySquare, button);
 		}
 	}
 	
@@ -142,10 +145,11 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 * 
 	 * @param x the x index of the square
 	 * @param y the y index of the square
+	 * @param button the button used in the selection
 	 */
-	private void alertSelectSquareListeners(int x, int y) {
+	private void alertSelectSquareListeners(int x, int y, int button) {
 		for (SelectSquareListener l : selectSquareListeners) {
-			l.onSelectSquare(x, y);
+			l.onSelectSquare(x, y, button);
 		}
 	}
 	
@@ -161,8 +165,9 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		 * 
 		 * @param x the x index of the selected square
 		 * @param y the y index of the selected square
+		 * @param button the button used in selecting the square
 		 */
-		public void onSelectSquare(int x, int y);
+		public void onSelectSquare(int x, int y, int button);
 	}
 
 	@Override
