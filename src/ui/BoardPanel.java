@@ -56,7 +56,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		
 		addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					respondToMouseClick(e.getX(), e.getY());
 				}

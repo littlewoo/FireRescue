@@ -27,7 +27,6 @@ public class Board implements SelectSquareListener {
 	}
 	
 	public void addToken(int x, int y, Token t) {
-		System.out.println("Adding token: " + x + ", " + y);
 		Point p = new Point(x, y);
 		tokenLayer.get(p).add(t);
 		alertTokenChangeListeners(p);
