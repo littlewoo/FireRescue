@@ -16,7 +16,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import ui.drawing.GenericTokenDrawer;
 import ui.drawing.TokenDrawingManager;
 
 /**
@@ -68,11 +67,13 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		addSelectSquareListener(b);
 		
 		tokenDrawingManager = new TokenDrawingManager();
+		b.placePlayerToken();
 	}
 	
 	/**
 	 * Paint this component. Draw the grid as currently stored.
 	 * 
+	 * @param g the graphics instance to draw onto
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
