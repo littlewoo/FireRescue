@@ -1,4 +1,4 @@
-package game;
+package game.token;
 
 import java.awt.Color;
 

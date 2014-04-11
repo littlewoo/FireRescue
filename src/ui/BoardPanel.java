@@ -2,8 +2,8 @@ package ui;
 
 import game.Board;
 import game.Board.TokenChangeListener;
+import game.token.Token;
 import game.Game;
-import game.Token;
 
 import java.awt.Color;
 import java.awt.Dimension;

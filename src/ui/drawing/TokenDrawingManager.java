@@ -1,6 +1,6 @@
 package ui.drawing;
 
-import game.Token;
+import game.token.Token;
 
 import java.awt.Graphics2D;
 import java.util.HashMap;
