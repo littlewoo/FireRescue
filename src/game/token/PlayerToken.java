@@ -1,11 +1,12 @@
-package game;
+package game.token;
+
 
 import java.awt.Color;
 
 import ui.drawing.PlayerTokenPainter;
 import ui.drawing.TokenPainter;
 
-public class PlayerToken extends Token {
+public class PlayerToken implements Token {
 	private final String name;
 	private final Color colour;
 	
