@@ -4,6 +4,8 @@ import game.Game;
 
 import javax.swing.JFrame;
 
+import ui.playersDialog.PlayerInfoDialog;
+
 /**
  * The graphical user interface for the game.
  * 
@@ -11,6 +13,7 @@ import javax.swing.JFrame;
  */
 public class GUI {
 	private JFrame frame;
+	public final static String FONT_NAME = "Trebuchet MS";
 	
 	/**
 	 * Construct a new GUI.
@@ -22,6 +25,7 @@ public class GUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
+		new PlayerInfoDialog(6);
 	}
 
 	public static void main(String[] args) {
