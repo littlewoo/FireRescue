@@ -113,11 +113,17 @@ public class Board implements SelectSquareListener {
 		for (Point p : directions) {
 			int xOffset = x + p.x;
 			int yOffset = y + p.y;
-			while (fireLayer.get(new Point(xOffset, yOffset)) != null) {
+			ThreatToken t = fireLayer.get(new Point(xOffset, yOffset));
+			while (t != null && t instanceof FireToken) {
 				xOffset += p.x;
 				yOffset += p.y;
+				t = fireLayer.get(new Point(xOffset, yOffset));
+			}
+			if (t != null) {
+				removeThreatToken(t);
 			}
 			addThreatToken(xOffset, yOffset, new FireToken());
+				
 		}
 		
 	}
