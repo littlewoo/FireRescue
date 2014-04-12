@@ -51,4 +51,9 @@ public class GenericTokenPainter extends TokenPainter {
 		g.setFont(TOKEN_CHAR_FONT);
 		g.drawString(symbol, x+TOKEN_CHAR_X_OFFSET, y+TOKEN_CHAR_Y_OFFSET);
 	}
+
+	@Override
+	protected int getDiameter() {
+		return TOKEN_DIAMETER_PERCENTAGE * CELL_SIZE / 100;
+	}
 }

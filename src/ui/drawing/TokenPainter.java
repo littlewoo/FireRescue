@@ -50,4 +50,10 @@ public abstract class TokenPainter {
 	}
 
 	public abstract void draw(Graphics2D g);
+	
+	/**
+	 * @return the diameter of the token, expressed as a percentage of the size
+	 * 			of the cell.
+	 */
+	protected abstract int getDiameter();
 }

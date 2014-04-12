@@ -54,4 +54,9 @@ public class PlayerTokenPainter extends TokenPainter {
 		
 	}
 
+	@Override
+	protected int getDiameter() {
+		return TOKEN_DIAMETER_PERCENTAGE;
+	}
+
 }
