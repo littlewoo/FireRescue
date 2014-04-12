@@ -1,8 +1,8 @@
 package ui;
 
 import game.Board;
+import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
-import game.token.Token;
 import game.Game;
 
 import java.awt.Color;
@@ -171,15 +171,23 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	}
 
 	@Override
-	public void onTokenChange(int x, int y, List<Token> tokens) {
-		for (Token t : tokens) {
-			int xLoc = LEFT_MARGIN + CELL_SIZE * x + CELL_SIZE / 2;
-			int yLoc = TOP_MARGIN + CELL_SIZE * y + CELL_SIZE / 2;
-			
-			tokenDrawingManager.addToken(t);
-			tokenDrawingManager.updateTokenLocation(t, xLoc, yLoc);
-			
-			repaint();
+	public void onTokenChange(TokenChangeEvent e) {
+		int xLoc = LEFT_MARGIN + CELL_SIZE * e.getX() + CELL_SIZE / 2;
+		int yLoc = TOP_MARGIN + CELL_SIZE * e.getY() + CELL_SIZE / 2;
+		
+		switch (e.getChange()) {
+			case ADD:
+				tokenDrawingManager.addToken(e.getToken(), xLoc, yLoc);
+				break;
+			case REMOVE:
+				tokenDrawingManager.removeToken(e.getToken());
+				break;
+			case MOVE:
+				tokenDrawingManager.updateTokenLocation(
+						e.getToken(), e.getX(), e.getY());
+				break;
 		}
+		
+		repaint();
 	}
 }

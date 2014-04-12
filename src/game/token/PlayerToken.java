@@ -6,7 +6,7 @@ import java.awt.Color;
 import ui.drawing.PlayerTokenPainter;
 import ui.drawing.TokenPainter;
 
-public class PlayerToken implements Token {
+public class PlayerToken implements MovableToken {
 	private final String name;
 	private final Color colour;
 	

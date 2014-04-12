@@ -16,64 +16,77 @@ import java.util.Map;
 import ui.BoardPanel;
 import ui.BoardPanel.SelectSquareListener;
 
-public class Board implements SelectSquareListener {
-	private Map<Point, List<Token>> tokenLayer;
+public class Board implements SelectSquareListener {	
 	private Map<Token, Point> tokenLocs;
 	private Map<Point, ThreatToken> fireLayer;
+	private Map<Point, PlayerToken> playersLayer;
 	
-	private Token playerToken;
+	private PlayerToken playerToken;
 	
 	private List<TokenChangeListener> tokenChangeListeners;
 	
 	public Board() {
-		tokenLayer = new HashMap<Point, List<Token>>();
+		playersLayer = new HashMap<Point, PlayerToken>();
 		tokenLocs = new HashMap<Token, Point>();
 		fireLayer = new HashMap<Point, ThreatToken>();
-		
-		for (int x=0; x<10; x++) {
-			for (int y=0; y<8; y++) {
-				Point p = new Point(x, y);
-				tokenLayer.put(p, new ArrayList<Token>());
-			}
-		}
-		
+			
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
 		
 		playerToken = new PlayerToken("Esther", Color.GREEN);
 	}
 	
 	public void placePlayerToken() {
-		addToken(4,4,playerToken);
+		addPlayerToken(4,4,playerToken);
 	}
 	
 	public void addToken(int x, int y, Token t) {
-		Point p = new Point(x, y);
-		tokenLayer.get(p).add(t);
-		tokenLocs.put(t, p);
-		alertTokenChangeListeners(p);
+		tokenLocs.put(t, new Point(x, y));
+		TokenChangeEvent e = new TokenChangeEvent(x, y, t, TokenChangeType.ADD);
+		alertTokenChangeListeners(e);
+	}
+	
+	public void addPlayerToken(int x, int y, PlayerToken t) {
+		playersLayer.put(new Point(x, y), t);
+		addToken(x, y, t);
+	}
+	
+	public void addThreatToken(int x, int y, ThreatToken t) {
+		fireLayer.put(new Point(x,y), t);
+		addToken(x, y, t);
 	}
 	
 	public void removeToken(Token t) {
-		Point p = tokenLocs.get(t);
-		boolean success = tokenLayer.get(p).remove(t);
+		Point p = tokenLocs.remove(t);
+		boolean success = p != null;
 		if (success) {
-			alertTokenChangeListeners(p);
+			TokenChangeEvent e = 
+					new TokenChangeEvent(p.x, p.y, t, TokenChangeType.REMOVE);
+			alertTokenChangeListeners(e);
+			
 		}
 	}
 	
-	public void moveToken(int x, int y, Token t) {
-		removeToken(t);
-		addToken(x,y,t);
+	public void removePlayerToken(Token t) {
+		Point p = tokenLocs.get(t);
+		if (p != null) {
+			playersLayer.remove(p);
+			removeToken(t);
+		}
+	}
+
+	private void removeThreatToken(ThreatToken t) {
+		fireLayer.remove(t);
+		removeToken(t);		
 	}
 	
-	public List<Token> getTokensAt(int x, int y) {
-		return tokenLayer.get(new Point(x, y));
+	public void movePlayerToken(int x, int y, PlayerToken t) {
+		removePlayerToken(t);
+		addPlayerToken(x, y, t);
 	}
 	
-	private void alertTokenChangeListeners(Point p) {
-		List<Token> tokens = tokenLayer.get(p);
+	private void alertTokenChangeListeners(TokenChangeEvent e) {
 		for (TokenChangeListener l : tokenChangeListeners) {
-			l.onTokenChange(p.x, p.y, tokens);
+			l.onTokenChange(e);
 		}
 	}
 	
@@ -82,9 +95,11 @@ public class Board implements SelectSquareListener {
 		ThreatToken t = fireLayer.get(p);
 		if (t == null) {
 			addThreatToken(x, y, new SmokeToken());
+			System.out.println("Adding smoke at (" + x + "," + y + ")");
 		} else if (t instanceof SmokeToken) {
 			removeThreatToken(t);
 			addThreatToken(x, y, new FireToken());
+			System.out.println("Addiing fire at (" + x + "," + y + ")");
 		} else {
 			fireExplosion(x, y);
 		}
@@ -93,16 +108,14 @@ public class Board implements SelectSquareListener {
 	private void fireExplosion(int x, int y) {
 		System.out.println("Explosion triggered at (" + x + "," + y + ")");
 	}
-
-	private void removeThreatToken(ThreatToken t) {
-		fireLayer.remove(t);
-		removeToken(t);		
-	}
-
-	private void addThreatToken(int x, int y, ThreatToken t) {
-		Point p = new Point(x, y);
-		fireLayer.put(p, t);
-		addToken(x, y, t);
+	
+	@Override
+	public void onSelectSquare(int x, int y, int button) {
+		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
+			movePlayerToken(x, y, playerToken);
+		} else {
+			advanceFire(x, y);
+		}
 	}
 
 	public void addTokenChangeListener(TokenChangeListener listener) {
@@ -110,15 +123,38 @@ public class Board implements SelectSquareListener {
 	}
 	
 	public interface TokenChangeListener {
-		public void onTokenChange(int x, int y, List<Token> tokens);
+		public void onTokenChange(TokenChangeEvent e);
 	}
-
-	@Override
-	public void onSelectSquare(int x, int y, int button) {
-		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
-			moveToken(x, y, playerToken);
-		} else {
-			advanceFire(x, y);
+	
+	public class TokenChangeEvent {
+		private final int x;
+		private final int y;
+		private final Token token;
+		private final TokenChangeType change;
+		
+		private TokenChangeEvent(int x, int y, Token t, 
+								 TokenChangeType change) {
+			this.x = x;
+			this.y = y;
+			this.token = t;
+			this.change = change;
 		}
+		
+		public int getX() {
+			return x;
+		}
+		public int getY() {
+			return y;
+		}
+		public Token getToken() {
+			return token;
+		}
+		public TokenChangeType getChange() {
+			return change;
+		}
+	}
+	
+	public enum TokenChangeType {
+		ADD, REMOVE, MOVE;
 	}
 }

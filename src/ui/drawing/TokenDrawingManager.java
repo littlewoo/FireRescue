@@ -14,8 +14,9 @@ public class TokenDrawingManager {
 		tokenPainters = new HashMap<Token, TokenPainter>();
 	}
 	
-	public void addToken(Token t) {
+	public void addToken(Token t, int x, int y) {
 		tokenPainters.put(t, t.getPainter());
+		updateTokenLocation(t, x, y);
 	}
 	
 	public void removeToken(Token t) {
