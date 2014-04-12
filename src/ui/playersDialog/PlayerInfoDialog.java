@@ -11,8 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import ui.GUI;
-import ui.playersDialog.PlayersPanel.PlayerCountChangeListener;
-import java.awt.GridLayout;
 
 public class PlayerInfoDialog extends JDialog {
 	public PlayerInfoDialog(int maxPlayers) {
@@ -39,18 +37,8 @@ public class PlayerInfoDialog extends JDialog {
 		getContentPane().add(playerPanels, BorderLayout.CENTER);
 		playerPanels.setLayout(new FlowLayout());
 		
-		PlayersPanel playerPanel = PlayersPanel.getFirst(playerPanels, maxPlayers);
+		PlayersPanel playerPanel = new PlayersPanel(ColourElement.COLOURS);
 		
-		playerPanel.addPlayerCountChangeListener(
-				new PlayerCountChangeListener() {
-					@Override
-					public void onPlayerCountChange(int playerCount) {
-						System.out.println("Player count changed...");
-						lblProceedWithPlayers.setText(
-								"Proceed with " + playerCount + "players:");
-						pack();
-					}
-		});
 		
 		playerPanels.add(playerPanel);
 		
