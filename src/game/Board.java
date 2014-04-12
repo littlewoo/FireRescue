@@ -95,18 +95,31 @@ public class Board implements SelectSquareListener {
 		ThreatToken t = fireLayer.get(p);
 		if (t == null) {
 			addThreatToken(x, y, new SmokeToken());
-			System.out.println("Adding smoke at (" + x + "," + y + ")");
 		} else if (t instanceof SmokeToken) {
 			removeThreatToken(t);
 			addThreatToken(x, y, new FireToken());
-			System.out.println("Addiing fire at (" + x + "," + y + ")");
 		} else {
 			fireExplosion(x, y);
 		}
 	}
 	
 	private void fireExplosion(int x, int y) {
-		System.out.println("Explosion triggered at (" + x + "," + y + ")");
+		Point[] directions = new Point[]{
+				new Point(-1, 0),  // west
+				new Point( 1, 0),  // east
+				new Point( 0,-1),  // north
+				new Point( 0, 1)}; // south
+		
+		for (Point p : directions) {
+			int xOffset = x + p.x;
+			int yOffset = y + p.y;
+			while (fireLayer.get(new Point(xOffset, yOffset)) != null) {
+				xOffset += p.x;
+				yOffset += p.y;
+			}
+			addThreatToken(xOffset, yOffset, new FireToken());
+		}
+		
 	}
 	
 	@Override
