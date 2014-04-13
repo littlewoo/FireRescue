@@ -1,6 +1,7 @@
 package ui;
 
 import game.Game;
+import game.token.PlayerToken;
 
 import java.util.List;
 
@@ -30,5 +31,11 @@ public class GUI {
 
 	public static void main(String[] args) {
 		new GUI();
+	}
+	
+	public interface TurnTaker {
+		public void onEndTurn();
+		
+		public PlayerToken getCurrentPlayer();
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Random;
 
 import ui.BoardPanel;
 import ui.BoardPanel.SelectSquareListener;
+import ui.GUI.TurnTaker;
 import ui.playersDialog.PlayerInputData;
 
 /**
@@ -16,11 +17,11 @@ import ui.playersDialog.PlayerInputData;
  * 
  * @author littlewoo
  */
-public class Game implements SelectSquareListener {
+public class Game implements SelectSquareListener, TurnTaker {
 	public static final int WIDTH = 10;
 	public static final int HEIGHT = 8;
 
-	private PlayerToken currentPlayer;
+	private int currentPlayerIndex;
 	
 	private List<PlayerToken> players;
 	private Board board;
@@ -43,7 +44,7 @@ public class Game implements SelectSquareListener {
 		for (PlayerInputData p : data) {
 			addPlayer(p);
 		}
-		currentPlayer = players.get(0);
+		currentPlayerIndex = 0;
 	}
 	
 	private PlayerToken addPlayer(PlayerInputData data) {
@@ -71,13 +72,23 @@ public class Game implements SelectSquareListener {
 	@Override
 	public void onSelectSquare(int x, int y, int button) {
 		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
-			board.movePlayerToken(x, y, currentPlayer);
+			board.movePlayerToken(x, y, getCurrentPlayer());
 		} else {
 			board.advanceFire(x, y);
 		}
 	}
+	
+	public PlayerToken getCurrentPlayer() {
+		return players.get(currentPlayerIndex);
+	}
 
 	public void addTokenChangeListener(TokenChangeListener listener) {
 		board.addTokenChangeListener(listener);
+	}
+
+	@Override
+	public void onEndTurn() {
+		currentPlayerIndex ++;
+		currentPlayerIndex = currentPlayerIndex % players.size();
 	} 
 }
