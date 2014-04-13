@@ -1,5 +1,9 @@
 package game;
 
+import java.util.List;
+
+import ui.playersDialog.PlayerInputData;
+
 /**
  * The internal workings of the game.
  * 
@@ -11,8 +15,13 @@ public class Game {
 	
 	/**
 	 * Construct a new game
+	 * @param data 
 	 */
-	public Game() {
+	public Game(List<PlayerInputData> data) {
+		System.out.println("Starting a new game with " + data.size() + " players:");
+		for (PlayerInputData p : data) {
+			System.out.println("\t" + p);
+		}
 		board = new Board();
 	}
 

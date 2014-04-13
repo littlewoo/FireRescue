@@ -1,7 +1,6 @@
 package ui.playersDialog;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +9,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class PlayersPanel extends JPanel {
+public class PlayerPanel extends JPanel {
 	private static final long serialVersionUID = -3487717973647209369L;
 	private JTextField txtPlayerName;
-	private ColourComboBox cboColour;
+	private ColourComboBox cboColour;	
+	private List<ColourElement> colours;
 	
-	
-	public PlayersPanel(List<ColourElement> colours) {		
+	public PlayerPanel(List<ColourElement> colours) {		
+		this.colours = colours;
+		
 		JLabel lblName = new JLabel("Name:");
 		this.add(lblName);
 		
@@ -40,5 +41,16 @@ public class PlayersPanel extends JPanel {
 	private ColourElement[] coloursToArray(List<ColourElement> colours) {
 		ColourElement[] vals = new ColourElement[colours.size()];
 		return colours.toArray(vals);
+	}
+	
+	public List<ColourElement> getRemainingColours() {
+		List<ColourElement> vals = new ArrayList<ColourElement>();
+		Object selected = cboColour.getSelectedItem();
+		for (ColourElement ce : colours) {
+			if (selected != ce) {
+				vals.add(ce);
+			}
+		}
+		return vals;
 	}
 }

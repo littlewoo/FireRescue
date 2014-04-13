@@ -20,4 +20,11 @@ public class PlayerInputData {
 		this.name = name;
 		this.colour = colour;
 	}
+	
+	/**
+	 * Express this player as a string.
+	 */
+	public String toString() {
+		return name + ": " + colour;
+	}
 }
