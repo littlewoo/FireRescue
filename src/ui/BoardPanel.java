@@ -29,7 +29,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	private final static int WIDTH = Game.WIDTH;
 	private final static int HEIGHT = Game.HEIGHT;
 	
-	public final static int CELL_SIZE = 100;
+	public final static int CELL_SIZE = 95;
 	private final static int MARGIN_SIZE = 25;
 	private final static int LEFT_MARGIN = MARGIN_SIZE;
 	private final static int RIGHT_MARGIN = MARGIN_SIZE + CELL_SIZE * WIDTH;

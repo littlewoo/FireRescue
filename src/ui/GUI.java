@@ -4,8 +4,6 @@ import game.Game;
 
 import java.util.List;
 
-import javax.swing.JFrame;
-
 import ui.playersDialog.PlayerInfoDialog;
 import ui.playersDialog.PlayerInfoDialog.OkListener;
 import ui.playersDialog.PlayerInputData;
@@ -16,7 +14,6 @@ import ui.playersDialog.PlayerInputData;
  * @author littlewoo
  */
 public class GUI {
-	public final static String FONT_NAME = "Trebuchet MS";
 	
 	/**
 	 * Construct a new GUI.
@@ -26,18 +23,9 @@ public class GUI {
 		pid.addOkListener(new OkListener() {
 			@Override
 			public void onOk(List<PlayerInputData> data) {
-				makeGui(new Game(data));
+				new GameFrame(new Game(data));
 			}
 		});
-	}
-
-	protected void makeGui(Game game) {
-		JFrame frame = new JFrame();
-		BoardPanel panel = new BoardPanel(game);
-		frame.getContentPane().add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setVisible(true);
 	}
 
 	public static void main(String[] args) {
