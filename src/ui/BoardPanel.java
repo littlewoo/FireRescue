@@ -1,6 +1,5 @@
 package ui;
 
-import game.Board;
 import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
 import game.Game;
@@ -49,6 +48,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 * Make a new BoardPanel
 	 */
 	public BoardPanel(Game game) {
+		tokenDrawingManager = new TokenDrawingManager();
 		
 		setPreferredSize(
 				new Dimension(MARGIN_SIZE + WIDTH * CELL_SIZE + MARGIN_SIZE, 
@@ -56,6 +56,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		setBackground(new Color(160, 82, 45));
 		
 		selectSquareListeners = new ArrayList<SelectSquareListener>();
+		addSelectSquareListener(game);
 		
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -64,12 +65,9 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 			}			
 		});
 		
-		Board b = game.getBoard();
-		b.addTokenChangeListener(this);
-		addSelectSquareListener(b);
+		game.addTokenChangeListener(this);
 		
-		tokenDrawingManager = new TokenDrawingManager();
-		b.placePlayerToken();
+		game.placePlayerToken();
 	}
 	
 	/**

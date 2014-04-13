@@ -6,22 +6,16 @@ import game.token.SmokeToken;
 import game.token.ThreatToken;
 import game.token.Token;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ui.BoardPanel;
-import ui.BoardPanel.SelectSquareListener;
-
-public class Board implements SelectSquareListener {	
+public class Board {	
 	private Map<Token, Point> tokenLocs;
 	private Map<Point, ThreatToken> fireLayer;
 	private Map<Point, PlayerToken> playersLayer;
-	
-	private PlayerToken playerToken;
 	
 	private List<TokenChangeListener> tokenChangeListeners;
 	
@@ -31,12 +25,6 @@ public class Board implements SelectSquareListener {
 		fireLayer = new HashMap<Point, ThreatToken>();
 			
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
-		
-		playerToken = new PlayerToken("Esther", Color.GREEN);
-	}
-	
-	public void placePlayerToken() {
-		addPlayerToken(4,4,playerToken);
 	}
 	
 	public void addToken(int x, int y, Token t) {
@@ -62,7 +50,6 @@ public class Board implements SelectSquareListener {
 			TokenChangeEvent e = 
 					new TokenChangeEvent(p.x, p.y, t, TokenChangeType.REMOVE);
 			alertTokenChangeListeners(e);
-			
 		}
 	}
 	
@@ -90,7 +77,7 @@ public class Board implements SelectSquareListener {
 		}
 	}
 	
-	private void advanceFire(int x, int y) {
+	void advanceFire(int x, int y) {
 		Point p = new Point(x, y);
 		ThreatToken t = fireLayer.get(p);
 		if (t == null) {
@@ -126,15 +113,6 @@ public class Board implements SelectSquareListener {
 				
 		}
 		
-	}
-	
-	@Override
-	public void onSelectSquare(int x, int y, int button) {
-		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
-			movePlayerToken(x, y, playerToken);
-		} else {
-			advanceFire(x, y);
-		}
 	}
 
 	public void addTokenChangeListener(TokenChangeListener listener) {

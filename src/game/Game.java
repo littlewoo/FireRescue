@@ -1,7 +1,13 @@
 package game;
 
+import game.Board.TokenChangeListener;
+import game.token.PlayerToken;
+
+import java.awt.Color;
 import java.util.List;
 
+import ui.BoardPanel;
+import ui.BoardPanel.SelectSquareListener;
 import ui.playersDialog.PlayerInputData;
 
 /**
@@ -9,8 +15,8 @@ import ui.playersDialog.PlayerInputData;
  * 
  * @author littlewoo
  */
-public class Game {
-	
+public class Game implements SelectSquareListener {
+	private PlayerToken currentPlayer;
 	private Board board;
 	
 	/**
@@ -19,13 +25,28 @@ public class Game {
 	 */
 	public Game(List<PlayerInputData> data) {
 		System.out.println("Starting a new game with " + data.size() + " players:");
+		currentPlayer = new PlayerToken("John", Color.ORANGE);
+		
 		for (PlayerInputData p : data) {
 			System.out.println("\t" + p);
 		}
 		board = new Board();
 	}
 
-	public Board getBoard() {
-		return board;
+	public void placePlayerToken() {
+		board.addPlayerToken(4,4,currentPlayer);
 	}
+	
+	@Override
+	public void onSelectSquare(int x, int y, int button) {
+		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
+			board.movePlayerToken(x, y, currentPlayer);
+		} else {
+			board.advanceFire(x, y);
+		}
+	}
+
+	public void addTokenChangeListener(TokenChangeListener listener) {
+		board.addTokenChangeListener(listener);
+	} 
 }
