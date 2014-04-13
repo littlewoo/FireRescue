@@ -23,6 +23,9 @@ import java.awt.ComponentOrientation;
 import java.awt.Point;
 
 public class PlayerInfoDialog extends JDialog {
+	// TODO: don't release it while this is here
+	private static final boolean RELEASABLE = false;
+	
 	private JPanel playersPanel;
 	private List<PlayerPanel> playerPanels;
 	private List<OkListener> okListeners;
@@ -81,11 +84,20 @@ public class PlayerInfoDialog extends JDialog {
 		for (int i=1; i<=maxPlayers; i++) {
 			playerCount.addItem(i);
 		}
+		if (!RELEASABLE) {
+			playerCount.addItem(-1);
+		}
 		playerCount.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int value = (Integer) playerCount.getSelectedItem();
-				setPlayerCount(value);
+				// TODO: remove this when we no longer need test data
+				if (!RELEASABLE && value == -1) {
+					setPlayerCount(5);
+					fillTestData();
+				} else {
+					setPlayerCount(value);
+				}
 			}
 		});
 		playerCount.setSelectedIndex(0);
@@ -116,6 +128,16 @@ public class PlayerInfoDialog extends JDialog {
 		pack();
 	}
 	
+	private void fillTestData() {
+		List<ColourElement> colours = ColourElement.COLOURS;
+		playerPanels.get(0).setTestData("John", colours.get(3));
+		playerPanels.get(1).setTestData("Esther", colours.get(4));
+		playerPanels.get(2).setTestData("Elanor", colours.get(5));
+		playerPanels.get(3).setTestData("James", colours.get(1));
+		playerPanels.get(4).setTestData("William", colours.get(2));
+		
+	}
+
 	private boolean checkValidInput(List<PlayerInputData> playerData) {
 		Set<String> names = new HashSet<String>();
 		Set<Color> colours = new HashSet<Color>();

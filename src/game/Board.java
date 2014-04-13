@@ -33,9 +33,14 @@ public class Board {
 		alertTokenChangeListeners(e);
 	}
 	
-	public void addPlayerToken(int x, int y, PlayerToken t) {
-		playersLayer.put(new Point(x, y), t);
+	public boolean addPlayerToken(int x, int y, PlayerToken t) {
+		Point p = new Point(x,y);
+		if (playersLayer.get(p) != null) {
+			return false;
+		}
+		playersLayer.put(p, t);
 		addToken(x, y, t);
+		return true;
 	}
 	
 	public void addThreatToken(int x, int y, ThreatToken t) {
@@ -69,12 +74,6 @@ public class Board {
 	public void movePlayerToken(int x, int y, PlayerToken t) {
 		removePlayerToken(t);
 		addPlayerToken(x, y, t);
-	}
-	
-	private void alertTokenChangeListeners(TokenChangeEvent e) {
-		for (TokenChangeListener l : tokenChangeListeners) {
-			l.onTokenChange(e);
-		}
 	}
 	
 	void advanceFire(int x, int y) {
@@ -113,6 +112,12 @@ public class Board {
 				
 		}
 		
+	}
+	
+	private void alertTokenChangeListeners(TokenChangeEvent e) {
+		for (TokenChangeListener l : tokenChangeListeners) {
+			l.onTokenChange(e);
+		}
 	}
 
 	public void addTokenChangeListener(TokenChangeListener listener) {

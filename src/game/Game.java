@@ -3,8 +3,9 @@ package game;
 import game.Board.TokenChangeListener;
 import game.token.PlayerToken;
 
-import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import ui.BoardPanel;
 import ui.BoardPanel.SelectSquareListener;
@@ -16,7 +17,12 @@ import ui.playersDialog.PlayerInputData;
  * @author littlewoo
  */
 public class Game implements SelectSquareListener {
+	public static final int WIDTH = 10;
+	public static final int HEIGHT = 8;
+
 	private PlayerToken currentPlayer;
+	
+	private List<PlayerToken> players;
 	private Board board;
 	
 	/**
@@ -24,17 +30,42 @@ public class Game implements SelectSquareListener {
 	 * @param data 
 	 */
 	public Game(List<PlayerInputData> data) {
-		System.out.println("Starting a new game with " + data.size() + " players:");
-		currentPlayer = new PlayerToken("John", Color.ORANGE);
-		
-		for (PlayerInputData p : data) {
-			System.out.println("\t" + p);
-		}
+		createPlayers(data);		
 		board = new Board();
 	}
+	
+	private void createPlayers(List<PlayerInputData> data) {
+		if (data.size() <= 0) {
+			throw new IllegalArgumentException("Cannot start a game with " + 
+												data.size() + " players!");
+		}
+		players = new ArrayList<PlayerToken>();
+		for (PlayerInputData p : data) {
+			addPlayer(p);
+		}
+		currentPlayer = players.get(0);
+	}
+	
+	private PlayerToken addPlayer(PlayerInputData data) {
+		PlayerToken player = new PlayerToken(data.name, data.colour);
+		players.add(player);
+		return player;
+	}
+	
+	public void placePlayers() {
+		for (PlayerToken t : players) {
+			placePlayerTokenRandomly(t);
+		}
+	}
 
-	public void placePlayerToken() {
-		board.addPlayerToken(4,4,currentPlayer);
+	private void placePlayerTokenRandomly(PlayerToken t) {
+		Random rand = new Random(System.currentTimeMillis());
+		boolean success = false;
+		while (!success) {
+			int x = rand.nextInt(WIDTH);
+			int y = rand.nextInt(HEIGHT);
+			success = board.addPlayerToken(x, y, t);
+		}
 	}
 	
 	@Override

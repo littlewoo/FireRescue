@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 public class ColourElement extends JPanel {
 	private static final long serialVersionUID = -458233182340693648L;
-	private static final List<ColourElement> COLOURS;
+	static final List<ColourElement> COLOURS;
 	private static final ColourElement BLACK_ELEM = new ColourElement(Color.BLACK, Color.WHITE, "Black");
 	private static final ColourElement BLUE_ELEM = new ColourElement(Color.BLUE, Color.WHITE, "Blue");
 	private static final ColourElement GREEN_ELEM = new ColourElement(Color.GREEN, Color.BLACK, "Green");

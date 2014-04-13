@@ -53,4 +53,9 @@ public class PlayerPanel extends JPanel {
 		}
 		return vals;
 	}
+	
+	public void setTestData(String name, ColourElement colour) {
+		txtPlayerName.setText(name);
+		cboColour.setSelectedItem(colour);
+	}
 }

@@ -26,8 +26,8 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	
 	private static final long serialVersionUID = 6945410881583290262L;
 	
-	private final static int WIDTH = 10;
-	private final static int HEIGHT = 8;
+	private final static int WIDTH = Game.WIDTH;
+	private final static int HEIGHT = Game.HEIGHT;
 	
 	public final static int CELL_SIZE = 100;
 	private final static int MARGIN_SIZE = 25;
@@ -66,8 +66,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		});
 		
 		game.addTokenChangeListener(this);
-		
-		game.placePlayerToken();
+		game.placePlayers();
 	}
 	
 	/**
