@@ -22,12 +22,12 @@ import ui.GUI.TurnTaker;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 
-public class InfoPanel extends JPanel {
+public class ControlPanel extends JPanel {
 	private TurnTaker turnTaker; 
 	
 	private JLabel currentPlayerLabel;
 	
-	public InfoPanel(TurnTaker turnTaker) {
+	public ControlPanel(TurnTaker turnTaker) {
 		this.turnTaker = turnTaker;
 		makePanel();
 	}

@@ -14,13 +14,13 @@ import javax.swing.JMenuItem;
 public class GameFrame extends JFrame {
 	private static final long serialVersionUID = -4898631063836444714L;
 	
-	private InfoPanel infoPanel;
+	private ControlPanel controlPanel;
 	private BoardPanel boardPanel;
 
 	public GameFrame(Game game) {
 		
-		infoPanel = new InfoPanel(game);
-		getContentPane().add(infoPanel, BorderLayout.EAST);
+		controlPanel = new ControlPanel(game);
+		getContentPane().add(controlPanel, BorderLayout.EAST);
 		
 		boardPanel = new BoardPanel(game);
 		boardPanel.setPreferredSize(new Dimension(1000, 850));
