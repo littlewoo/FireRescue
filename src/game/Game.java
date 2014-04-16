@@ -1,7 +1,9 @@
 package game;
 
 import game.Board.TokenChangeListener;
+import game.DiceRoller.DieResult;
 import game.token.PlayerToken;
+import interfaces.TurnTaker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,6 @@ import java.util.Random;
 
 import ui.BoardPanel;
 import ui.BoardPanel.SelectSquareListener;
-import ui.GUI.TurnTaker;
 import ui.playersDialog.PlayerInputData;
 
 /**
@@ -25,6 +26,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 	
 	private List<PlayerToken> players;
 	private Board board;
+	private DiceRoller diceRoller;
 	
 	/**
 	 * Construct a new game
@@ -33,6 +35,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 	public Game(List<PlayerInputData> data) {
 		createPlayers(data);		
 		board = new Board();
+		diceRoller = new DiceRoller();
 	}
 	
 	private void createPlayers(List<PlayerInputData> data) {
@@ -88,7 +91,22 @@ public class Game implements SelectSquareListener, TurnTaker {
 
 	@Override
 	public void onEndTurn() {
+		advanceFire();
 		currentPlayerIndex ++;
 		currentPlayerIndex = currentPlayerIndex % players.size();
 	} 
+	
+	/** 
+	 * 
+	 */
+	private void advanceFire() {
+		int x = rollDie(6);
+		int y = rollDie(8);
+		board.advanceFire(x, y);
+	}
+
+	private int rollDie(int sides) {
+		DieResult r = diceRoller.rollDie(sides, true);
+		return r.roll;
+	}
 }

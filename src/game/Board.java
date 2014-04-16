@@ -8,6 +8,7 @@ import game.token.Token;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,11 @@ public class Board {
 		removeToken(t);		
 	}
 	
+	private void removeThreatToken(int x, int y) {
+		Point p = new Point(x, y);
+		removeThreatToken(fireLayer.get(p));
+	}
+	
 	public void movePlayerToken(int x, int y, PlayerToken t) {
 		removePlayerToken(t);
 		addPlayerToken(x, y, t);
@@ -87,8 +93,58 @@ public class Board {
 		} else {
 			fireExplosion(x, y);
 		}
+		smokeIntoFire();
+		removeFireFromEdges();
 	}
 	
+	/** 
+	 * 
+	 */
+	private void removeFireFromEdges() {
+		for (int x=0; x<Game.WIDTH; x++) {
+			removeThreatToken(x, 0);
+			removeThreatToken(x, Game.HEIGHT);
+		}
+		for (int y=0; y<Game.HEIGHT; y++) {
+			removeThreatToken(0, y);
+			removeThreatToken(Game.WIDTH, y);
+		}
+	}
+
+	/** 
+	 * 
+	 */
+	private void smokeIntoFire() { 
+		for (int x=0; x<Game.WIDTH; x++) {
+			for (int y=0; y<Game.HEIGHT; y++) {
+				Point p = new Point(x, y);
+				ThreatToken t = fireLayer.get(p);
+				if (t instanceof FireToken) {
+					smokeIntoFire((FireToken) t);
+				}
+			}
+		}
+	}
+	
+	private void smokeIntoFire(FireToken t) {
+		Point p = tokenLocs.get(t);
+		Point[] testPoints = new Point[] {
+				new Point(p.x-1, p.y),
+				new Point(p.x+1, p.y),
+				new Point(p.x, p.y-1),
+				new Point(p.x, p.y+1)
+		};
+		for (Point np : testPoints) {
+			ThreatToken tt = fireLayer.get(np);
+			if (tt instanceof SmokeToken) {
+				removeThreatToken(tt);
+				FireToken ft = new FireToken();
+				addThreatToken(np.x, np.y, ft);
+				smokeIntoFire(ft);
+			}
+		}
+	}
+
 	private void fireExplosion(int x, int y) {
 		Point[] directions = new Point[]{
 				new Point(-1, 0),  // west

@@ -1,10 +1,11 @@
 package ui;
 
 import game.token.PlayerToken;
+import interfaces.TurnTaker;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,15 +13,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-
-import ui.GUI.TurnTaker;
-import javax.swing.SwingConstants;
-import java.awt.Font;
 
 public class ControlPanel extends JPanel {
 	private TurnTaker turnTaker; 
@@ -34,14 +32,14 @@ public class ControlPanel extends JPanel {
 	
 	private void makePanel() {
 		setBackground(Color.BLACK);
-		setPreferredSize(new Dimension(200, 400));
+		setPreferredSize(new Dimension(500, 100));
 		setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), new EmptyBorder(5, 5, 5, 5)));
-		setLayout(new BorderLayout(0, 0));
+		setLayout(new GridLayout(1, 0, 0, 0));
 		
 		JPanel currentPlayerPanel = new JPanel();
 		currentPlayerPanel.setBackground(Color.BLACK);
 		currentPlayerPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Current Player:", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
-		add(currentPlayerPanel, BorderLayout.NORTH);
+		add(currentPlayerPanel);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -49,8 +47,9 @@ public class ControlPanel extends JPanel {
 		currentPlayerPanel.add(panel_1);
 		
 		currentPlayerLabel = new JLabel("");
+		currentPlayerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(currentPlayerLabel);
-		currentPlayerLabel.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), new EmptyBorder(10, 10, 10, 10)));
+		currentPlayerLabel.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), new EmptyBorder(0, 10, 4, 10)));
 		currentPlayerLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
 		currentPlayerLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 		currentPlayerLabel.setOpaque(true);
@@ -58,11 +57,11 @@ public class ControlPanel extends JPanel {
 		
 		updatePlayer();
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.BLACK);
-		panel.setBorder(new TitledBorder(null, "Actions", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
-		add(panel, BorderLayout.SOUTH);
-		panel.setLayout(new GridLayout(0, 1, 0, 0));
+		JPanel actionPanel = new JPanel();
+		actionPanel.setBackground(Color.BLACK);
+		actionPanel.setBorder(new TitledBorder(null, "Actions", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
+		add(actionPanel);
+		actionPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		JButton endTurnButton = new JButton("End Turn");
 		endTurnButton.addActionListener(new ActionListener() {
@@ -71,7 +70,13 @@ public class ControlPanel extends JPanel {
 				endTurn();
 			}
 		});
-		panel.add(endTurnButton);
+		actionPanel.add(endTurnButton);
+		
+		DicePanel dicePanel = new DicePanel();
+		GridLayout gridLayout = (GridLayout) dicePanel.getLayout();
+		gridLayout.setColumns(2);
+		gridLayout.setRows(0);
+		add(dicePanel);
 	}
 	
 	private void updatePlayer() {

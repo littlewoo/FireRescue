@@ -20,7 +20,7 @@ public class GameFrame extends JFrame {
 	public GameFrame(Game game) {
 		
 		controlPanel = new ControlPanel(game);
-		getContentPane().add(controlPanel, BorderLayout.EAST);
+		getContentPane().add(controlPanel, BorderLayout.SOUTH);
 		
 		boardPanel = new BoardPanel(game);
 		boardPanel.setPreferredSize(new Dimension(1000, 850));
