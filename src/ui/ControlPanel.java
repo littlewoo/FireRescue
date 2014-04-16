@@ -1,6 +1,7 @@
 package ui;
 
 import game.token.PlayerToken;
+import interfaces.DiceRollListener;
 import interfaces.TurnTaker;
 
 import java.awt.Color;
@@ -24,6 +25,8 @@ public class ControlPanel extends JPanel {
 	private TurnTaker turnTaker; 
 	
 	private JLabel currentPlayerLabel;
+	
+	private DiceRollListener diceRollerListener;
 	
 	public ControlPanel(TurnTaker turnTaker) {
 		this.turnTaker = turnTaker;
@@ -73,10 +76,21 @@ public class ControlPanel extends JPanel {
 		actionPanel.add(endTurnButton);
 		
 		DicePanel dicePanel = new DicePanel();
+		diceRollerListener = dicePanel;
+		
 		GridLayout gridLayout = (GridLayout) dicePanel.getLayout();
 		gridLayout.setColumns(2);
 		gridLayout.setRows(0);
 		add(dicePanel);
+	}
+	
+	/**
+	 * Get the dice roll listener from this panel. This panel includes a
+	 * listener which listens for dice roll events, and then displays the result.
+	 * @return the listener
+	 */
+	public DiceRollListener getDiceRollListener() {
+		return diceRollerListener;
 	}
 	
 	private void updatePlayer() {

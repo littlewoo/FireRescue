@@ -3,6 +3,7 @@ package game;
 import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
 import game.token.PlayerToken;
+import interfaces.DiceRollListener;
 import interfaces.TurnTaker;
 
 import java.util.ArrayList;
@@ -88,6 +89,15 @@ public class Game implements SelectSquareListener, TurnTaker {
 	public void addTokenChangeListener(TokenChangeListener listener) {
 		board.addTokenChangeListener(listener);
 	}
+	
+	/**
+	 * Add a dice roll listener
+	 * 
+	 * @param listener the listener
+	 */
+	public void addDiceRollListener(DiceRollListener listener) {
+		diceRoller.addDiceRollListener(listener);
+	}
 
 	@Override
 	public void onEndTurn() {
@@ -100,8 +110,8 @@ public class Game implements SelectSquareListener, TurnTaker {
 	 * 
 	 */
 	private void advanceFire() {
-		int x = rollDie(6);
-		int y = rollDie(8);
+		int x = rollDie(8);
+		int y = rollDie(6);
 		board.advanceFire(x, y);
 	}
 
