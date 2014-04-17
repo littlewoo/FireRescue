@@ -113,6 +113,7 @@ public class Board {
 	 * @param t the token to be removed
 	 */
 	public void removeToken(Token t) {
+		System.out.println("Removing token: " + t);
 		Point p = tokenLocs.remove(t);
 		boolean success = (p != null);
 		if (success) {
@@ -141,8 +142,9 @@ public class Board {
 	 * @param t the token to be removed
 	 */
 	private void removeThreatToken(ThreatToken t) {
-		fireLayer.remove(t);
-		removeToken(t);
+		System.out.println("Removing threat token: " + t);
+		Point p = tokenLocs.get(t);
+		removeThreatToken(p.x, p.y);
 	}
 
 	/**
@@ -152,9 +154,10 @@ public class Board {
 	 * @param y the y coordinate
 	 */
 	private void removeThreatToken(int x, int y) {
-		checkCoordinates(x, y, true);
 		Point p = new Point(x, y);
-		removeThreatToken(fireLayer.get(p));
+		System.out.println("Removing threat token by location: " + p);
+		ThreatToken t = fireLayer.remove(p);
+		removeToken(t);
 	}
 
 	/**
@@ -218,14 +221,16 @@ public class Board {
 	 * Remove any fire tokens from around the outside edge of the board.
 	 */
 	private void removeFireFromEdges() {
+		System.out.println("Removing fire from edges: ");
 		for (int x = 0; x < Game.WIDTH; x++) {
 			removeThreatToken(x, 0);
-			removeThreatToken(x, Game.HEIGHT);
+			removeThreatToken(x, Game.HEIGHT-1);
 		}
 		for (int y = 0; y < Game.HEIGHT; y++) {
 			removeThreatToken(0, y);
-			removeThreatToken(Game.WIDTH, y);
+			removeThreatToken(Game.WIDTH-1, y);
 		}
+		System.out.println("Done removing fire from edges.");
 	}
 
 	/** 
@@ -238,6 +243,11 @@ public class Board {
 			for (int y = 0; y < Game.HEIGHT; y++) {
 				Point p = new Point(x, y);
 				ThreatToken t = fireLayer.get(p);
+				if (t != null && tokenLocs.get(t) == null) {
+					System.out.println("Item is in the fire layer but not tokenlocs: " + p);
+					System.out.println("FireLayer:\n" + fireLayer);
+					System.out.println("TokenLocs:\n" + tokenLocs);
+				}
 				if (t instanceof FireToken) {
 					smokeIntoFire((FireToken) t);
 				}
@@ -253,10 +263,13 @@ public class Board {
 	 * @param t the firetoken to be checked
 	 */ 
 	private void smokeIntoFire(FireToken t) {
-		Point p = tokenLocs.get(t);
+		Point p = null;
+		try {
+		p = tokenLocs.get(t);
 		Point[] testPoints = new Point[] { new Point(p.x - 1, p.y),
 				new Point(p.x + 1, p.y), new Point(p.x, p.y - 1),
 				new Point(p.x, p.y + 1) };
+		
 		for (Point np : testPoints) {
 			ThreatToken tt = fireLayer.get(np);
 			if (tt instanceof SmokeToken) {
@@ -265,6 +278,15 @@ public class Board {
 				addThreatToken(np.x, np.y, ft);
 				smokeIntoFire(ft);
 			}
+		}} catch (NullPointerException e) {
+			System.out.println("Details: ");
+			System.out.println("\tFireToken: " + t + ", " + t.getClass());
+			if (p == null) {
+				System.out.println("\tp==null");
+			} else {
+				System.out.println("\tPoint: " + p);
+			}
+			throw e;
 		}
 	}
 
