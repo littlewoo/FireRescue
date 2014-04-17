@@ -1,12 +1,35 @@
+/**
+ *  File name: PlayerInfoDialog.java
+ *
+ *  Copyright 2014: John Littlewood
+ *
+ *  This file is part of FireRescue.
+ *
+ *  FireRescue is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  FireRescue is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package ui.playersDialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,17 +42,29 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.ComponentOrientation;
-import java.awt.Point;
 
+/**
+ * A dialog box for gathering input on the players playing the game. Gathers the
+ * number of players, the names of each player, and the colour of each player
+ *
+ * @author littlewoo
+ */
 public class PlayerInfoDialog extends JDialog {
 	// TODO: don't release it while this is here
 	private static final boolean RELEASABLE = false;
 	
+	/** the panel for the player details */
 	private JPanel playersPanel;
+	/** the individeal panels for each player */
 	private List<PlayerPanel> playerPanels;
+	/** listeners for when the ok button is clicked */
 	private List<OkListener> okListeners;
 	
+	/**
+	 * Construct a new dialog. 
+	 * 
+	 * @param maxPlayers the maximum number of players
+	 */
 	public PlayerInfoDialog(int maxPlayers) {
 		setLocation(new Point(300, 100));
 		setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -106,6 +141,9 @@ public class PlayerInfoDialog extends JDialog {
 		pack();
 	}
 	
+	/** 
+	 * @return the data on all the players, input by the form
+	 */
 	protected List<PlayerInputData> gatherPlayerData() {
 		List<PlayerInputData> playerData = new ArrayList<PlayerInputData>();
 		for (PlayerPanel pp : playerPanels) {
@@ -114,10 +152,15 @@ public class PlayerInfoDialog extends JDialog {
 		return playerData;
 	}
 
+	/**
+	 * Set the number of players
+	 * 
+	 * @param count the number of players
+	 */
 	private void setPlayerCount(int count) {
 		playersPanel.removeAll();
 		playersPanel.setLayout(new GridLayout(count,1));
-		List<ColourElement> colours = ColourElement.getDefaultColours();
+		Collection<ColourElement> colours = ColourElement.getDefaultColours();
 		playerPanels = new ArrayList<>();
 		for (int i=0; i<count; i++) {
 			PlayerPanel pp = new PlayerPanel(colours);
@@ -128,6 +171,11 @@ public class PlayerInfoDialog extends JDialog {
 		pack();
 	}
 	
+	/**
+	 * Fill the dialog with test data
+	 * 
+	 * TODO: remove this
+	 */
 	private void fillTestData() {
 		List<ColourElement> colours = ColourElement.COLOURS;
 		playerPanels.get(0).setTestData("John", colours.get(3));
@@ -138,6 +186,12 @@ public class PlayerInfoDialog extends JDialog {
 		
 	}
 
+	/**
+	 * Check that the player data is valid
+	 * 
+	 * @param playerData the data to check
+	 * @return true if the data is valid
+	 */
 	private boolean checkValidInput(List<PlayerInputData> playerData) {
 		Set<String> names = new HashSet<String>();
 		Set<Color> colours = new HashSet<Color>();
@@ -161,6 +215,11 @@ public class PlayerInfoDialog extends JDialog {
 		return true;		
 	}
 	
+	/**
+	 * Alert listeners that the ok has been clicked
+	 * 
+	 * @param data
+	 */
 	public void alertOkListeners(List<PlayerInputData> data) {
 		if (okListeners != null) {
 			for (OkListener l : okListeners) {
@@ -169,6 +228,11 @@ public class PlayerInfoDialog extends JDialog {
 		}
 	}
 
+	/**
+	 * Add a listener for listening to when the ok button is clicked
+	 * 
+	 * @param listener
+	 */
 	public void addOkListener(OkListener listener) {
 		if (okListeners == null) {
 			okListeners = new ArrayList<OkListener>();	
@@ -176,7 +240,17 @@ public class PlayerInfoDialog extends JDialog {
 		okListeners.add(listener);
 	}
 	
+	/**
+	 * A listener which is alerted when the ok button is clicked
+	 *
+	 * @author littlewoo
+	 */
 	public interface OkListener {
+		/**
+		 * Called when the ok button on the PlayerInfoDialog is clicked
+		 * 
+		 * @param data
+		 */
 		public void onOk(List<PlayerInputData> data);
 	}
 	

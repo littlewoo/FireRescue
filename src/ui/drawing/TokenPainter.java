@@ -1,3 +1,23 @@
+/**
+ *  File name: TokenPainter.java
+ *
+ *  Copyright 2014: John Littlewood
+ *
+ *  This file is part of FireRescue.
+ *
+ *  FireRescue is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  FireRescue is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package ui.drawing;
 
 import java.awt.BasicStroke;
@@ -7,19 +27,29 @@ import java.awt.Graphics2D;
 
 import ui.BoardPanel;
 
+/**
+ * Class for painting tokens onto the board
+ *
+ * @author littlewoo
+ */
 public abstract class TokenPainter {
+	/** the size of one square on the board, in pixels */
 	protected static final int CELL_SIZE = BoardPanel.CELL_SIZE;
 	
+	/** The font used to label the token */
 	protected static final Font tokenLabelFont = 
 			new Font(Font.MONOSPACED, Font.BOLD, 50);
 	
-	// the location of the token to be drawn
+	/** the location of the token to be drawn */
 	protected int x;
 	protected int y;
-	
-	public TokenPainter() {
-	}
-	
+		
+	/**
+	 * Update the location of this token
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
 	public void updateLocation(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -49,6 +79,11 @@ public abstract class TokenPainter {
 		g.drawOval(cLeft, cTop, diameter, diameter);
 	}
 
+	/** 
+	 * Paint the token
+	 * 
+	 * @param g the graphics to paint on
+	 */
 	public abstract void draw(Graphics2D g);
 	
 	/**

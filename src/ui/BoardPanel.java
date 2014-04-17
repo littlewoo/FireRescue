@@ -1,3 +1,23 @@
+/**
+ *  File name: BoardPanel.java
+ *
+ *  Copyright 2014: John Littlewood
+ *
+ *  This file is part of FireRescue.
+ *
+ *  FireRescue is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  FireRescue is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package ui;
 
 import game.Board.TokenChangeEvent;
@@ -15,7 +35,9 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import ui.drawing.TokenDrawingManager;
+import ui.drawing.TokenPaintingManager;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
 
 /**
  * The panel showing the board.
@@ -26,29 +48,44 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	
 	private static final long serialVersionUID = 6945410881583290262L;
 	
+	/** The width and height of the board (in squares) */
 	private final static int WIDTH = Game.WIDTH;
 	private final static int HEIGHT = Game.HEIGHT;
 	
+	/** the size of one of the squares on the board, in pixels */
 	public final static int CELL_SIZE = 95;
+	/** the size of the margins around the board */
 	private final static int MARGIN_SIZE = 25;
+	/** the x value for the left margin */
 	private final static int LEFT_MARGIN = MARGIN_SIZE;
+	/** the x value for the right margin */
 	private final static int RIGHT_MARGIN = MARGIN_SIZE + CELL_SIZE * WIDTH;
+	/** the y value for the top margin */
 	private final static int TOP_MARGIN = MARGIN_SIZE;
+	/** the y value for the bottom margin */
 	private final static int BOTTOM_MARGIN = MARGIN_SIZE + CELL_SIZE * HEIGHT;
 	
+	/** integer constant for the left mouse button */
 	public final static int LEFT_MOUSE_BUTTON = MouseEvent.BUTTON1;
+	/** integer constant for the middle mouse button */
 	public final static int MIDDLE_MOUSE_BUTTON = MouseEvent.BUTTON2;
+	/** integer constant for the right mouse button */
 	public final static int RIGHT_MOUSE_BUTTON = MouseEvent.BUTTON3;
 	
+	/** the listeners which are listening for square selections */
 	private List<SelectSquareListener> selectSquareListeners;
 	
-	private final TokenDrawingManager tokenDrawingManager;
+	/** the manager responsible for drawing tokens */
+	private final TokenPaintingManager tokenPaintingManager;
 	
 	/**
 	 * Make a new BoardPanel
+	 * 
+	 * @param game the game represented by this board
 	 */
 	public BoardPanel(Game game) {
-		tokenDrawingManager = new TokenDrawingManager();
+		setBorder(null);
+		tokenPaintingManager = new TokenPaintingManager();
 		
 		setPreferredSize(
 				new Dimension(MARGIN_SIZE + WIDTH * CELL_SIZE + MARGIN_SIZE, 
@@ -79,7 +116,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
         Graphics2D g2 = (Graphics2D) g;
         super.paintComponent(g2);
         drawLines(g2);
-        tokenDrawingManager.drawAll(g2);
+        tokenPaintingManager.drawAll(g2);
     }
 	
 	/**
@@ -167,6 +204,12 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		public void onSelectSquare(int x, int y, int button);
 	}
 
+	/**
+	 * Respond to a token change event. The action taken depends on the type of 
+	 * change: adding a token to the drawing manager or removing it. 
+	 * 
+	 * @param e the token change event
+	 */
 	@Override
 	public void onTokenChange(TokenChangeEvent e) {
 		int xLoc = LEFT_MARGIN + CELL_SIZE * e.getX() + CELL_SIZE / 2;
@@ -174,13 +217,13 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		
 		switch (e.getChange()) {
 			case ADD:
-				tokenDrawingManager.addToken(e.getToken(), xLoc, yLoc);
+				tokenPaintingManager.addToken(e.getToken(), xLoc, yLoc);
 				break;
 			case REMOVE:
-				tokenDrawingManager.removeToken(e.getToken());
+				tokenPaintingManager.removeToken(e.getToken());
 				break;
 			case MOVE:
-				tokenDrawingManager.updateTokenLocation(
+				tokenPaintingManager.updateTokenLocation(
 						e.getToken(), e.getX(), e.getY());
 				break;
 		}

@@ -53,19 +53,19 @@ public class DicePanel extends JPanel implements DiceRollListener {
 		setOpaque(false);
 		setLayout(new GridLayout(2, 2, 0, 0));
 		
-		d6 = new JLabel("6");
-		d6.setForeground(Color.RED);
-		d6.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		d6.setHorizontalTextPosition(SwingConstants.CENTER);
-		d6.setHorizontalAlignment(SwingConstants.CENTER);
-		add(d6);
-		
 		d8 = new JLabel("8");
 		d8.setForeground(Color.WHITE);
 		d8.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		d8.setHorizontalTextPosition(SwingConstants.CENTER);
 		d8.setHorizontalAlignment(SwingConstants.CENTER);
 		add(d8);
+		
+		d6 = new JLabel("6");
+		d6.setForeground(Color.RED);
+		d6.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		d6.setHorizontalTextPosition(SwingConstants.CENTER);
+		d6.setHorizontalAlignment(SwingConstants.CENTER);
+		add(d6);
 	}
 
 	/* (non-Javadoc)

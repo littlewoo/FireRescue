@@ -26,7 +26,6 @@ import game.DiceRoller.DieResult;
  * Interface for objects which consume dice rolls.
  *
  * @author littlewoo
- *
  */
 public interface DiceRollListener {
 	public void diceRoll(DieResult dieResult);
