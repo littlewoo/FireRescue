@@ -24,6 +24,8 @@ import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
 import game.token.PlayerToken;
 import interfaces.DiceRollListener;
+import interfaces.TurnPhaseListener;
+import interfaces.TurnPhaseListener.TurnPhase;
 import interfaces.TurnTaker;
 
 import java.util.ArrayList;
@@ -54,6 +56,9 @@ public class Game implements SelectSquareListener, TurnTaker {
 	private Board board;
 	/** the source of dice rolls */
 	private DiceRoller diceRoller;
+	
+	/** listeners for turn phases */
+	private List<TurnPhaseListener> turnPhaseListeners;
 	
 	/**
 	 * Construct a new game
@@ -145,24 +150,6 @@ public class Game implements SelectSquareListener, TurnTaker {
 		return players.get(currentPlayerIndex);
 	}
 
-	/** 
-	 * Add a listener to listen for changes to tokens
-	 * 
-	 * @param listener
-	 */
-	public void addTokenChangeListener(TokenChangeListener listener) {
-		board.addTokenChangeListener(listener);
-	}
-	
-	/**
-	 * Add a dice roll listener
-	 * 
-	 * @param listener the listener
-	 */
-	public void addDiceRollListener(DiceRollListener listener) {
-		diceRoller.addDiceRollListener(listener);
-	}
-
 	/**
 	 * Respond to a signal to end the current player's turn
 	 */
@@ -180,9 +167,15 @@ public class Game implements SelectSquareListener, TurnTaker {
 	 * @see Board#advanceFire(int, int)
 	 */
 	private void advanceFire() {
+		alertTurnPhaseListeners(TurnPhase.ADVANCE_FIRE);
 		int x = rollDie(8);
 		int y = rollDie(6);
 		board.advanceFire(x, y);
+		alertTurnPhaseListeners(TurnPhase.SMOKE_TO_FIRE);
+		board.smokeIntoFire();
+		alertTurnPhaseListeners(TurnPhase.CLEAR_EDGE_FIRE);
+		board.removeFireFromEdges();
+		alertTurnPhaseListeners(TurnPhase.MOVE);
 	}
 
 	/**
@@ -195,4 +188,48 @@ public class Game implements SelectSquareListener, TurnTaker {
 		DieResult r = diceRoller.rollDie(sides, true);
 		return r.roll;
 	}
+
+	/** 
+	 * Add a listener to listen for changes to tokens
+	 * 
+	 * @param listener
+	 */
+	public void addTokenChangeListener(TokenChangeListener listener) {
+		board.addTokenChangeListener(listener);
+	}
+	
+	/**
+	 * Add a dice roll listener
+	 * 
+	 * @param listener the listener
+	 */
+	public void addDiceRollListener(DiceRollListener listener) {
+		diceRoller.addDiceRollListener(listener);
+	}
+	
+	/**
+	 * Add a turn phase listener
+	 * 
+	 * @param listener
+	 */
+	public void addTurnPhaseListener(TurnPhaseListener listener) {
+		if (turnPhaseListeners == null) {
+			turnPhaseListeners = new ArrayList<TurnPhaseListener>();
+		}
+		turnPhaseListeners.add(listener);
+	}
+	
+	/**
+	 * Alert turn phase listeners of a change in turn phase
+	 * 
+	 * @param phase the new turn phase
+	 */
+	private void alertTurnPhaseListeners(TurnPhase phase) {
+		if (turnPhaseListeners != null) {
+			for (TurnPhaseListener l : turnPhaseListeners) {
+				l.onTurnPhaseChange(phase);
+			}
+		}
+	}
+	
 }

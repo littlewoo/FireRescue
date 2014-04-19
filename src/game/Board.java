@@ -213,14 +213,12 @@ public class Board {
 		} else {
 			fireExplosion(x, y);
 		}
-		smokeIntoFire();
-		removeFireFromEdges();
 	}
 
 	/** 
 	 * Remove any fire tokens from around the outside edge of the board.
 	 */
-	private void removeFireFromEdges() {
+	public void removeFireFromEdges() {
 		System.out.println("Removing fire from edges: ");
 		for (int x = 0; x < Game.WIDTH; x++) {
 			removeThreatToken(x, 0);
@@ -238,7 +236,7 @@ public class Board {
 	 * token. If this places another smoke token adjacent to a fire token, 
 	 * carry on until there are no smoke tokens adjacent to fire tokens left.
 	 */
-	private void smokeIntoFire() {
+	public void smokeIntoFire() {
 		for (int x = 0; x < Game.WIDTH; x++) {
 			for (int y = 0; y < Game.HEIGHT; y++) {
 				Point p = new Point(x, y);

@@ -36,8 +36,6 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import ui.drawing.TokenPaintingManager;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 
 /**
  * The panel showing the board.
@@ -181,9 +179,15 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 * @param y the y index of the square
 	 * @param button the button used in the selection
 	 */
-	private void alertSelectSquareListeners(int x, int y, int button) {
-		for (SelectSquareListener l : selectSquareListeners) {
-			l.onSelectSquare(x, y, button);
+	private void alertSelectSquareListeners(final int x, final int y, 
+											final int button) {
+		for (final SelectSquareListener l : selectSquareListeners) {
+			Thread t = new Thread() {
+				public void run() {
+					l.onSelectSquare(x, y, button);
+				}
+			};
+			t.start();
 		}
 	}
 	

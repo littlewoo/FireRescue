@@ -1,5 +1,5 @@
 /**
- *  File name: GUI.java
+ *  File name: TurnPhaseView.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -20,37 +20,13 @@
  */
 package ui;
 
-import game.Game;
-
-import java.util.List;
-
-import ui.playersDialog.PlayerInfoDialog;
-import ui.playersDialog.PlayerInfoDialog.OkListener;
-import ui.playersDialog.PlayerInputData;
-
 /**
- * The graphical user interface for the game.
- * 
+ *
  * @author littlewoo
  */
-public class GUI {
-	
+public interface TurnPhaseView {
 	/**
-	 * Construct a new GUI. Displays the player info dialog, and attaches its
-	 * input to a new game.
+	 * Display the current turn phase
 	 */
-	public GUI() {
-		PlayerInfoDialog pid = new PlayerInfoDialog(6);
-		pid.addOkListener(new OkListener() {
-			@Override
-			public void onOk(List<PlayerInputData> data) {
-				Game game = new Game(data);
-				new GameFrame(game);
-			}
-		});
-	}
-
-	public static void main(String[] args) {
-		new GUI();
-	}
+	public void display(String text);
 }

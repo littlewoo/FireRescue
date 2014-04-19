@@ -1,5 +1,5 @@
 /**
- *  File name: GUI.java
+ *  File name: TurnPhaseListener.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,39 +18,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ui;
-
-import game.Game;
-
-import java.util.List;
-
-import ui.playersDialog.PlayerInfoDialog;
-import ui.playersDialog.PlayerInfoDialog.OkListener;
-import ui.playersDialog.PlayerInputData;
+package interfaces;
 
 /**
- * The graphical user interface for the game.
- * 
+ * A listener for listening for the progression of stages through a turn
+ *
  * @author littlewoo
  */
-public class GUI {
-	
+public interface TurnPhaseListener {
 	/**
-	 * Construct a new GUI. Displays the player info dialog, and attaches its
-	 * input to a new game.
+	 * Called when the phase of the turn changes
+	 * 
+	 * @param phase the newly begun phase
 	 */
-	public GUI() {
-		PlayerInfoDialog pid = new PlayerInfoDialog(6);
-		pid.addOkListener(new OkListener() {
-			@Override
-			public void onOk(List<PlayerInputData> data) {
-				Game game = new Game(data);
-				new GameFrame(game);
-			}
-		});
-	}
-
-	public static void main(String[] args) {
-		new GUI();
+	public void onTurnPhaseChange(TurnPhase phase);
+	
+	public enum TurnPhase {
+		BEGIN, MOVE, ADVANCE_FIRE, SMOKE_TO_FIRE, CLEAR_EDGE_FIRE, PLACE_POI; 
 	}
 }

@@ -35,6 +35,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
@@ -56,6 +57,9 @@ public class ControlPanel extends JPanel {
 	
 	/** the label displaying the current player's name */
 	private JLabel currentPlayerLabel;
+	
+	/** the view of the current turn phase */
+	private TurnPhaseView turnPhaseView;
 	
 	/**
 	 * Create a new ControlPanel 
@@ -80,23 +84,25 @@ public class ControlPanel extends JPanel {
 				new EmptyBorder(5, 5, 5, 5)));
 		setLayout(new GridLayout(1, 0, 0, 0));
 		
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		add(panel);
+		panel.setLayout(new GridLayout(1, 2, 0, 0));
+		
 		JPanel currentPlayerPanel = new JPanel();
+		currentPlayerPanel.setOpaque(false);
+		panel.add(currentPlayerPanel);
 		currentPlayerPanel.setBackground(Color.BLACK);
 		currentPlayerPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Current Player:", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
-		add(currentPlayerPanel);
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new EmptyBorder(10, 10, 10, 10));
-		panel_1.setBackground(Color.BLACK);
-		currentPlayerPanel.add(panel_1);
+		currentPlayerPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		currentPlayerLabel = new JLabel("");
+		currentPlayerPanel.add(currentPlayerLabel);
+		currentPlayerLabel.setOpaque(true);
 		currentPlayerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(currentPlayerLabel);
 		currentPlayerLabel.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), new EmptyBorder(0, 10, 4, 10)));
 		currentPlayerLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
 		currentPlayerLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-		currentPlayerLabel.setOpaque(true);
 		currentPlayerLabel.setBackground(Color.WHITE);
 		
 		updatePlayer();
@@ -111,7 +117,12 @@ public class ControlPanel extends JPanel {
 		endTurnButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				endTurn();
+				Thread t = new Thread() {
+					public void run() {
+						endTurn();
+					}
+				};
+				t.start();
 			}
 		});
 		actionPanel.add(endTurnButton);
@@ -122,6 +133,38 @@ public class ControlPanel extends JPanel {
 		gridLayout.setColumns(2);
 		gridLayout.setRows(0);
 		add(dicePanel);
+		
+		JPanel turnPhasePanel = new JPanel();
+		turnPhasePanel.setOpaque(false);
+		turnPhasePanel.setBorder(new TitledBorder(null, "Turn phase:", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
+		add(turnPhasePanel);
+		
+		final JLabel turnPhaseLabel = new JLabel("Move");
+		turnPhaseLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+		turnPhaseLabel.setForeground(Color.WHITE);
+		turnPhasePanel.add(turnPhaseLabel);
+		
+		turnPhaseView = new TurnPhaseView() {
+			@Override
+			public void display(final String text) {
+				Thread t = new Thread() {
+					public void run() {
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								turnPhaseLabel.setText(text);
+							}
+						});
+					}
+				};
+				t.start();
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
 	}
 	
 	/**
@@ -131,6 +174,16 @@ public class ControlPanel extends JPanel {
 	 */
 	public DiceRollListener getDiceRollListener() {
 		return dicePanel;
+	}
+	
+	/**
+	 * Get the TurnPhaseView from this panel. This is the view for displaying 
+	 * the current turn phase.
+	 * 
+	 * @return the view
+	 */
+	public TurnPhaseView getTurnPhaseView() {
+		return turnPhaseView;
 	}
 	
 	/**
