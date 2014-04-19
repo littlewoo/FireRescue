@@ -20,7 +20,8 @@
  */
 package game;
 
-import java.util.HashSet;
+import java.awt.Point;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,10 +31,8 @@ import java.util.Set;
  * @author littlewoo
  */
 public class Walls {
-	/** The positions of the horizontal walls (true for wall present) */
-	private final boolean[][] horizontalWalls;
-	/** The positions of the vertical walls (true for wall present) */
-	private final boolean[][] verticalWalls;
+	/** The walls */
+	private Map<Point, Set<Direction>> walls;
 	
 	/**
 	 * <p>Constructor for walls. The walls are represented as follows: </p>
@@ -58,9 +57,10 @@ public class Walls {
 	 * @param horizontal the horizontal set of walls
 	 * @param vertical the vertical set of walls
 	 */
-	public Walls(boolean[][] horizontal, boolean[][] vertical) {
-		horizontalWalls = horizontal;
-		verticalWalls = vertical;
+	public Walls(Map<Point, Set<Direction>> walls) {
+		System.out.println(walls);
+		this.walls = walls;
+		
 	}
 	
 	/**
@@ -79,32 +79,8 @@ public class Walls {
 	 * 			of the board
 	 */
 	public boolean isPassable(int x, int y, Direction dir) {
-		int xIndex = x;
-		int yIndex = y;
-		boolean[][] wallSet = null;
-		switch (dir) {
-			case NORTH:
-				xIndex = x - 1;
-				yIndex = y - 1;
-				wallSet = horizontalWalls;
-				break;
-			case SOUTH:
-				xIndex = x;
-				yIndex = y - 1;
-				wallSet = horizontalWalls;
-				break;
-			case EAST:
-				xIndex = x - 1;
-				yIndex = y;
-				wallSet = verticalWalls;
-				break;
-			case WEST:
-				xIndex = x - 1;
-				yIndex = y - 1;
-				wallSet = verticalWalls;
-				break;
-		}
-		return wallSet[xIndex][yIndex];
+		Point p = new Point(x, y);
+		return !walls.get(p).contains(dir);
 	}
 	
 	/**
@@ -115,24 +91,25 @@ public class Walls {
 	 * @return the directions which are blocked by walls from a square
 	 */
 	public Set<Direction> getWalls(int x, int y) {
-		Set<Direction> vals = new HashSet<>();
-		if (horizontalWalls[x][y-1]) {
-			vals.add(Direction.NORTH);
-		}
-		if (horizontalWalls[x][y]) {
-			vals.add(Direction.SOUTH);
-		}
-		if (verticalWalls[x-1][y]) {
-			vals.add(Direction.WEST);
-		}
-		if (verticalWalls[x][y]) {
-			vals.add(Direction.EAST);
-		}
-		return vals; 
+		return walls.get(new Point(x, y));
 	}
 	
 	
 	public enum Direction {
-		NORTH, SOUTH, EAST, WEST;
+		NORTH('N'), SOUTH('S'), EAST('E'), WEST('W');
+		private char character;
+		
+		private Direction(char c) {
+			character = c;
+		}
+		
+		public static Direction getDir(char val) {
+			for (Direction d : values()) {
+				if (d.character == val) {
+					return d;
+				}
+			}
+			return null;
+		}
 	}
 }

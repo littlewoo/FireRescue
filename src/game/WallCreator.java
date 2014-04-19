@@ -20,7 +20,19 @@
  */
 package game;
 
+import game.Walls.Direction;
 import interfaces.WallProvider;
+
+import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Utility class for creating walls for the board.
@@ -33,30 +45,45 @@ public class WallCreator implements WallProvider {
 	 * Create the walls 
 	 * 
 	 * @return the walls
+	 * @throws IOException 
 	 */
 	private static Walls createWalls() {
-		boolean l = true;
-		boolean _ = true;
-		boolean x = false;
-		boolean[][] horizontalWalls = new boolean[][] {
-				{_, _, _, _, _, x, _, _},
-				{x, x, x, x, x, x, x, x},
-				{x, x, _, _, _, _, _, x},
-				{x, x, x, x, x, x, x, x},
-				{_, _, _, x, _, _, _, _},
-				{x, x, x, x, x, x, x, x},
-				{_, _, x, _, _, _, _, _}
-		};
-		boolean[][] verticalWalls = new boolean[][] {
-				{l, x, x, x, x, l, x, x, l},
-				{l, x, x, l, x, x, x, x, l},
-				{x, x, x, x, x, x, l, x, l},
-				{l, x, l, x, x, x, x, x, l},
-				{l, x, x, x, x, l, x, l, l},
-				{l, x, x, x, x, x, x, x, l}
-		};
-		
-		return new Walls(horizontalWalls, verticalWalls);
+		Map<Point, Set<Direction>> dirs = new HashMap<Point, Set<Direction>>();
+		File f = new File("res/simple.board");
+		FileReader fr = null;
+		try {
+			fr = new FileReader(f);
+		} catch (FileNotFoundException e) {
+			System.out.println("Couldn't find the file " + f.getAbsolutePath());
+			e.printStackTrace();
+		}
+		Properties props = new Properties();
+		try {
+			props.load(fr);
+		} catch (IOException e) {
+			System.out.println("Problem reading the file.");
+			e.printStackTrace();
+		}
+		int height = Integer.parseInt(props.getProperty("height"));
+		int width = Integer.parseInt(props.getProperty("width"));
+		System.out.println("Dimension: (" + width + "x" + height + ")");
+		for (int x=0; x<width; x++) {
+			for (int y=0; y<height; y++) {
+				Set<Direction> dir = new HashSet<Direction>();
+				String key = "" + x + y;
+				String val = props.getProperty(key);
+				if (val == null) {
+					System.out.println("Couldn't read the property: " + key);
+				}
+				for (char c : val.toCharArray()) {
+					dir.add(Direction.getDir(c));
+				}
+				dirs.put(new Point(x, y), dir);
+				System.out.println(dir);
+			}
+			System.out.println("---------------");
+		}
+		return new Walls(dirs);
 	}
 	
 	/* (non-Javadoc)

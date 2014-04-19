@@ -36,12 +36,12 @@ public class WallTokenPainter extends TokenPainter {
 	
 	private static final int WIDTH_PERCENTAGE = 100;
 	
-	private static final int THICKNESS = 4;
+	private static final int THICKNESS = 5;
 	
-	private final int NORTH;
-	private final int EAST;
-	private final int SOUTH;
-	private final int WEST;
+	private int north;
+	private int east;
+	private int south;
+	private int west;
 	
 	private final Set<Direction> directions;
 	
@@ -54,11 +54,11 @@ public class WallTokenPainter extends TokenPainter {
 	 */
 	public WallTokenPainter(Set<Direction> directions) {
 		this.directions = directions;
-		int offset = CELL_SIZE / 2 - THICKNESS;
-		NORTH = super.y - offset;
-		EAST = super.x + offset;
-		SOUTH = super.y + offset;
-		WEST = super.x - offset;
+		int offset = CELL_SIZE / 2 - 3;
+		north = -offset;
+		east = offset;
+		south = offset;
+		west = -offset;
 	}
 
 	/* (non-Javadoc)
@@ -71,16 +71,16 @@ public class WallTokenPainter extends TokenPainter {
 		for (Direction dir : directions) {
 			switch (dir) {
 				case NORTH:
-					g.drawLine(EAST, NORTH, WEST, NORTH);
+					g.drawLine(east, north, west, north);
 					break;
 				case EAST:
-					g.drawLine(EAST, NORTH, EAST, SOUTH);
+					g.drawLine(east, north, east, south);
 					break;
 				case SOUTH:
-					g.drawLine(EAST, SOUTH, WEST, SOUTH);
+					g.drawLine(east, south, west, south);
 					break;
 				case WEST:
-					g.drawLine(WEST, NORTH, WEST, SOUTH);
+					g.drawLine(west, north, west, south);
 					break;
 				default:
 					break;
@@ -95,5 +95,14 @@ public class WallTokenPainter extends TokenPainter {
 	protected int getDiameter() {
 		return WIDTH_PERCENTAGE;
 	}
-
+	
+	@Override
+	public void updateLocation(int x, int y) {
+		super.updateLocation(x, y);
+		north += y;
+		south += y;
+		west += x;
+		east += x;
+		
+	}
 }

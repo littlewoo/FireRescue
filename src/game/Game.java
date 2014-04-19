@@ -67,8 +67,6 @@ public class Game implements SelectSquareListener, TurnTaker {
 	public Game(List<PlayerInputData> data) {
 		createPlayers(data);		
 		board = new Board();
-		Walls w = new WallCreator().getWalls();
-		board.addWalls(w);
 		diceRoller = new DiceRoller();
 	}
 	
@@ -233,5 +231,12 @@ public class Game implements SelectSquareListener, TurnTaker {
 			}
 		}
 	}
-	
+
+	/** 
+	 * 
+	 */
+	public void placeWalls() {
+		Walls w = new WallCreator().getWalls();
+		board.addWalls(w);
+	}
 }

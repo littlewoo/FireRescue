@@ -102,6 +102,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 		});
 		
 		game.addTokenChangeListener(this);
+		game.placeWalls();
 		game.placePlayers();
 	}
 	

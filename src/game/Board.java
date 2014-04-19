@@ -59,6 +59,15 @@ public class Board {
 
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
 	}
+	
+	/**
+	 * Get the mapping of tokens to their locations on the board.
+	 * 
+	 * @return the token locations
+	 */
+	public Map<Token, Point> getTokenLocs() {
+		return tokenLocs;
+	}
 
 	/**
 	 * Add a token to the board, in the location given. Note that this method
@@ -377,7 +386,7 @@ public class Board {
 		 * @param t the affected token
 		 * @param change the kind of chane which has occurred
 		 */
-		private TokenChangeEvent(int x, int y, Token t, TokenChangeType change) {
+		public TokenChangeEvent(int x, int y, Token t, TokenChangeType change) {
 			this.x = x;
 			this.y = y;
 			this.token = t;
@@ -427,14 +436,9 @@ public class Board {
 	 * @param w 
 	 */
 	public void addWalls(Walls w) {
-		for (int x=1; x<Game.WIDTH-1; x++) {
-			for (int y=1; y<Game.HEIGHT-1; y++) {
-				try {
-					addToken(x, y, new WallToken(w.getWalls(x, y)));
-				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println("x=" + x + ", y=" + y);
-					e.printStackTrace(System.out);
-				}
+		for (int x=0; x<Game.WIDTH; x++) {
+			for (int y=0; y<Game.HEIGHT; y++) {
+				addToken(x, y, new WallToken(w.getWalls(x, y)));
 			}
 		}
 	}
