@@ -25,6 +25,7 @@ import game.token.PlayerToken;
 import game.token.SmokeToken;
 import game.token.ThreatToken;
 import game.token.Token;
+import game.token.WallToken;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -419,5 +420,22 @@ public class Board {
 	 */
 	public enum TokenChangeType {
 		ADD, REMOVE, MOVE;
+	}
+
+	/** 
+	 * Create the walls on this board
+	 * @param w 
+	 */
+	public void addWalls(Walls w) {
+		for (int x=1; x<Game.WIDTH-1; x++) {
+			for (int y=1; y<Game.HEIGHT-1; y++) {
+				try {
+					addToken(x, y, new WallToken(w.getWalls(x, y)));
+				} catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println("x=" + x + ", y=" + y);
+					e.printStackTrace(System.out);
+				}
+			}
+		}
 	}
 }

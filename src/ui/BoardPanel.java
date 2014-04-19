@@ -23,6 +23,7 @@ package ui;
 import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
 import game.Game;
+import game.token.MovableToken;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -228,7 +229,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 				break;
 			case MOVE:
 				tokenPaintingManager.updateTokenLocation(
-						e.getToken(), e.getX(), e.getY());
+						(MovableToken) e.getToken(), e.getX(), e.getY());
 				break;
 		}
 		

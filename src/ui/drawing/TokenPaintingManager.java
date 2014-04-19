@@ -20,6 +20,7 @@
  */
 package ui.drawing;
 
+import game.token.MovableToken;
 import game.token.Token;
 
 import java.awt.Graphics2D;
@@ -63,8 +64,9 @@ public class TokenPaintingManager {
 	 * @param y the y location of the token
 	 */
 	public void addToken(Token t, int x, int y) {
-		tokenPainters.put(t, t.getPainter());
-		updateTokenLocation(t, x, y);
+		TokenPainter tp = t.getPainter();
+		tokenPainters.put(t, tp);
+		tp.updateLocation(x, y);
 	}
 	
 	/**
@@ -83,7 +85,7 @@ public class TokenPaintingManager {
 	 * @param x the new x location
 	 * @param y the new y location
 	 */
-	public void updateTokenLocation(Token t, int x, int y) {
+	public void updateTokenLocation(MovableToken t, int x, int y) {
 		tokenPainters.get(t).updateLocation(x, y);
 	}
 	
