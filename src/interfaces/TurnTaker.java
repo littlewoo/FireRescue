@@ -20,7 +20,7 @@
  */
 package interfaces;
 
-import game.token.PlayerToken;
+import game.Player;
 
 /**
  * Interface for objects involving turns. Has methods for receiving a signal to 
@@ -38,5 +38,5 @@ public interface TurnTaker {
 	 * 
 	 * @return the token representing the current player
 	 */
-	public PlayerToken getCurrentPlayer();
+	public Player getCurrentPlayer();
 }

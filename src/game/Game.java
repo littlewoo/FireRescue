@@ -23,6 +23,7 @@ package game;
 import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
 import game.token.PlayerToken;
+import interfaces.APListener;
 import interfaces.DiceRollListener;
 import interfaces.TurnPhaseListener;
 import interfaces.TurnPhaseListener.TurnPhase;
@@ -50,7 +51,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 	/** the index of the current player */
 	private int currentPlayerIndex;
 	/** all the players in the game */
-	private List<PlayerToken> players;
+	private List<Player> players;
 	
 	/** the board on which the action is happening */
 	private Board board;
@@ -81,7 +82,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 			throw new IllegalArgumentException("Cannot start a game with " + 
 												data.size() + " players!");
 		}
-		players = new ArrayList<PlayerToken>();
+		players = new ArrayList<Player>();
 		for (PlayerInputData p : data) {
 			addPlayer(p);
 		}
@@ -92,10 +93,11 @@ public class Game implements SelectSquareListener, TurnTaker {
 	 * Add a new player to the game.
 	 * 
 	 * @param data the player input data for the player
-	 * @return a player token representing the player
+	 * @return the new player object
 	 */
-	private PlayerToken addPlayer(PlayerInputData data) {
-		PlayerToken player = new PlayerToken(data.name, data.colour);
+	private Player addPlayer(PlayerInputData data) {
+		PlayerToken token = new PlayerToken(data.name, data.colour);
+		Player player = new Player(token);
 		players.add(player);
 		return player;
 	}
@@ -104,9 +106,11 @@ public class Game implements SelectSquareListener, TurnTaker {
 	 * Place the player tokens on the board. 
 	 */
 	public void placePlayers() {
-		for (PlayerToken t : players) {
+		for (Player p : players) {
+			PlayerToken t = p.getToken();
 			placePlayerTokenRandomly(t);
 		}
+		players.get(0).newTurn();
 	}
 
 	/**
@@ -146,7 +150,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 	/**
 	 * @return the player token of the current player
 	 */
-	public PlayerToken getCurrentPlayer() {
+	public Player getCurrentPlayer() {
 		return players.get(currentPlayerIndex);
 	}
 
@@ -158,6 +162,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 		advanceFire();
 		currentPlayerIndex ++;
 		currentPlayerIndex = currentPlayerIndex % players.size();
+		getCurrentPlayer().newTurn();
 	} 
 	
 	/** 
@@ -217,6 +222,17 @@ public class Game implements SelectSquareListener, TurnTaker {
 			turnPhaseListeners = new ArrayList<TurnPhaseListener>();
 		}
 		turnPhaseListeners.add(listener);
+	}
+	
+	/**
+	 * Add a player APListener
+	 * 
+	 * @param listener
+	 */
+	public void addAPListener(APListener listener) {
+		for (Player p : players) {
+			p.addAPListener(listener);
+		}
 	}
 	
 	/**

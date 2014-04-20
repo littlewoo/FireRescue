@@ -175,12 +175,18 @@ public class Board {
 	 * 
 	 * @param x the new x coordinate
 	 * @param y the new y coordinate
-	 * @param t
+	 * @param player
 	 */
-	public void movePlayerToken(int x, int y, PlayerToken t) {
+	public void movePlayerToken(int x, int y, Player player) {
 		checkCoordinates(x, y, true);
-		removePlayerToken(t);
-		addPlayerToken(x, y, t);
+		PlayerToken t = player.getToken();
+		Point p = tokenLocs.get(t);
+		int cost = Math.abs(x-p.x) + Math.abs(y-p.y);
+		if (player.performAction(cost)) {
+			removePlayerToken(t);
+			addPlayerToken(x, y, t);
+		} else {
+		}
 	}
 	
 	/**

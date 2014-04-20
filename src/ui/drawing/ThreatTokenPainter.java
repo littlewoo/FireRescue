@@ -34,7 +34,7 @@ public abstract class ThreatTokenPainter extends GenericTokenPainter {
 	 * the diameter of the token, expressed as a percentage of the size of
 	 * the square it is in
 	 */
-	private static final int DIAMETER_PERCENTAGE = 80;
+	private static final int DIAMETER_PERCENTAGE = 70;
 
 	/**
 	 * create a new threat token painter

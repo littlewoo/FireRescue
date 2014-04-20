@@ -34,7 +34,7 @@ import java.awt.Graphics2D;
 public class PlayerTokenPainter extends TokenPainter {
 	
 	/** the diameter of the token, as a percentage of the cell size */
-	private static int TOKEN_DIAMETER_PERCENTAGE = 66;
+	private static int TOKEN_DIAMETER_PERCENTAGE = 55;
 	
 	/**
 	 * the offset from the centre of the token for where the token's character

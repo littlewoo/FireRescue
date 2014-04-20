@@ -21,6 +21,7 @@
 package ui;
 
 import game.token.PlayerToken;
+import game.Player;
 import interfaces.DiceRollListener;
 import interfaces.TurnTaker;
 
@@ -41,6 +42,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import java.awt.Component;
 
 /**
  * A panel for showing information about the state of the game, and providing
@@ -60,6 +62,9 @@ public class ControlPanel extends JPanel {
 	
 	/** the view of the current turn phase */
 	private TurnPhaseView turnPhaseView;
+
+	/** the view for the current player's remaining AP */
+	private APView apView;
 	
 	/**
 	 * Create a new ControlPanel 
@@ -94,7 +99,7 @@ public class ControlPanel extends JPanel {
 		panel.add(currentPlayerPanel);
 		currentPlayerPanel.setBackground(Color.BLACK);
 		currentPlayerPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Current Player:", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
-		currentPlayerPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		currentPlayerPanel.setLayout(new GridLayout(1, 0, 0, 0));
 		
 		currentPlayerLabel = new JLabel("");
 		currentPlayerPanel.add(currentPlayerLabel);
@@ -104,6 +109,19 @@ public class ControlPanel extends JPanel {
 		currentPlayerLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
 		currentPlayerLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 		currentPlayerLabel.setBackground(Color.WHITE);
+		
+		final JLabel playerAPLabel = new JLabel("");
+		playerAPLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		playerAPLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		playerAPLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
+		playerAPLabel.setForeground(Color.WHITE);
+		currentPlayerPanel.add(playerAPLabel);
+		apView = new APView() {
+			@Override
+			public void updateAP(int ap) {
+				playerAPLabel.setText("" + ap + " AP");
+			}
+		};
 		
 		updatePlayer();
 		
@@ -139,7 +157,7 @@ public class ControlPanel extends JPanel {
 		turnPhasePanel.setBorder(new TitledBorder(null, "Turn phase:", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
 		add(turnPhasePanel);
 		
-		final JLabel turnPhaseLabel = new JLabel("Move");
+		final JLabel turnPhaseLabel = new JLabel("Movement");
 		turnPhaseLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
 		turnPhaseLabel.setForeground(Color.WHITE);
 		turnPhasePanel.add(turnPhaseLabel);
@@ -187,10 +205,18 @@ public class ControlPanel extends JPanel {
 	}
 	
 	/**
+	 * @return the AP view from this panel.
+	 */
+	public APView getAPView() {
+		return apView;
+	}
+	
+	/**
 	 * Update the view of who the current player is. 
 	 */
 	private void updatePlayer() {
-		PlayerToken t = turnTaker.getCurrentPlayer();
+		Player p = turnTaker.getCurrentPlayer();
+		PlayerToken t = p.getToken();
 		currentPlayerLabel.setBackground(t.getColour());
 		currentPlayerLabel.setText(t.getName());
 	}

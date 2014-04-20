@@ -59,6 +59,10 @@ public class GameFrame extends JFrame {
 		game.addTurnPhaseListener(tph);
 		
 		game.addDiceRollListener(controlPanel.getDiceRollListener());
+		
+		APView apv = controlPanel.getAPView();
+		APHandler aph = new APHandler(apv);
+		game.addAPListener(aph);
 
 		boardPanel = new BoardPanel(game);
 		boardPanel.setPreferredSize(new Dimension(1000, 850));
