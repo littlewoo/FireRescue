@@ -30,8 +30,10 @@ import game.token.WallToken;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The board on which all the action happens. 
@@ -59,14 +61,70 @@ public class Board {
 
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
 	}
+
+	/** 
+	 * Create the walls on this board
+	 * @param w 
+	 */
+	public void addWalls(Walls w) {
+		for (int x=0; x<getWidth(); x++) {
+			for (int y=0; y<getHeight(); y++) {
+				addToken(x, y, new WallToken(w.getWalls(x, y)));
+			}
+		}
+	}
 	
 	/**
-	 * Get the mapping of tokens to their locations on the board.
+	 * Get a set of squares adjacent to a token
 	 * 
-	 * @return the token locations
+	 * @return the set of squares
 	 */
-	public Map<Token, Point> getTokenLocs() {
-		return tokenLocs;
+	public Set<Point> getAdjacentSquares(Token t) {
+		Point p = tokenLocs.get(t);
+		if (p != null) {
+			return getAdjacentSquares(p.x, p.y);
+		}
+		return new HashSet<Point>();
+	}
+
+	/** 
+	 * Get a set of squares adjacent to a location
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @return
+	 */
+	private Set<Point> getAdjacentSquares(int x, int y) {
+		Set<Point> result = new HashSet<Point>();
+		Point p = new Point(x, y);
+		if (p.x > 0) {
+			result.add(new Point(p.x-1, p.y));
+		}
+		if (p.x < getWidth()-1) {
+			result.add(new Point(p.x+1, p.y));
+		}
+		if (p.y > 0) {
+			result.add(new Point(p.x, p.y-1));
+		}
+		if (p.y < getHeight()-1) {
+			result.add(new Point(p.x, p.y+1));
+		}
+		
+		return result;
+	}
+
+	/** 
+	 * @return the width of the board
+	 */
+	private int getWidth() {
+		return Game.WIDTH;
+	}
+	
+	/**
+	 * @return the height of the board 
+	 */
+	private int getHeight() {
+		return Game.HEIGHT;
 	}
 
 	/**
@@ -200,7 +258,7 @@ public class Board {
 	 * @return true if the coordinates are in bounds 
 	 */
 	private boolean checkCoordinates(int x, int y, boolean throwException) {
-		boolean inBounds = !(x < 0 || x > Game.WIDTH || y < 0 || y > Game.HEIGHT);
+		boolean inBounds = !(x < 0 || x > getWidth() || y < 0 || y > getHeight());
 		if (throwException && !inBounds) {
 			throw new IllegalArgumentException(
 				"Board.addToken: location out of bounds. (" + x + "," + y + ")");
@@ -236,13 +294,13 @@ public class Board {
 	 */
 	public void removeFireFromEdges() {
 		System.out.println("Removing fire from edges: ");
-		for (int x = 0; x < Game.WIDTH; x++) {
+		for (int x = 0; x < getWidth(); x++) {
 			removeThreatToken(x, 0);
-			removeThreatToken(x, Game.HEIGHT-1);
+			removeThreatToken(x, getHeight()-1);
 		}
-		for (int y = 0; y < Game.HEIGHT; y++) {
+		for (int y = 0; y < getHeight(); y++) {
 			removeThreatToken(0, y);
-			removeThreatToken(Game.WIDTH-1, y);
+			removeThreatToken(getWidth()-1, y);
 		}
 		System.out.println("Done removing fire from edges.");
 	}
@@ -253,8 +311,8 @@ public class Board {
 	 * carry on until there are no smoke tokens adjacent to fire tokens left.
 	 */
 	public void smokeIntoFire() {
-		for (int x = 0; x < Game.WIDTH; x++) {
-			for (int y = 0; y < Game.HEIGHT; y++) {
+		for (int x = 0; x < getWidth(); x++) {
+			for (int y = 0; y < getHeight(); y++) {
 				Point p = new Point(x, y);
 				ThreatToken t = fireLayer.get(p);
 				if (t != null && tokenLocs.get(t) == null) {
@@ -277,12 +335,7 @@ public class Board {
 	 * @param t the firetoken to be checked
 	 */ 
 	private void smokeIntoFire(FireToken t) {
-		Point p = null;
-		try {
-		p = tokenLocs.get(t);
-		Point[] testPoints = new Point[] { new Point(p.x - 1, p.y),
-				new Point(p.x + 1, p.y), new Point(p.x, p.y - 1),
-				new Point(p.x, p.y + 1) };
+		Set<Point> testPoints = getAdjacentSquares(t);
 		
 		for (Point np : testPoints) {
 			ThreatToken tt = fireLayer.get(np);
@@ -292,15 +345,6 @@ public class Board {
 				addThreatToken(np.x, np.y, ft);
 				smokeIntoFire(ft);
 			}
-		}} catch (NullPointerException e) {
-			System.out.println("Details: ");
-			System.out.println("\tFireToken: " + t + ", " + t.getClass());
-			if (p == null) {
-				System.out.println("\tp==null");
-			} else {
-				System.out.println("\tPoint: " + p);
-			}
-			throw e;
 		}
 	}
 
@@ -332,7 +376,6 @@ public class Board {
 			addThreatToken(xOffset, yOffset, new FireToken());
 
 		}
-
 	}
 
 	/**
@@ -435,17 +478,5 @@ public class Board {
 	 */
 	public enum TokenChangeType {
 		ADD, REMOVE, MOVE;
-	}
-
-	/** 
-	 * Create the walls on this board
-	 * @param w 
-	 */
-	public void addWalls(Walls w) {
-		for (int x=0; x<Game.WIDTH; x++) {
-			for (int y=0; y<Game.HEIGHT; y++) {
-				addToken(x, y, new WallToken(w.getWalls(x, y)));
-			}
-		}
 	}
 }

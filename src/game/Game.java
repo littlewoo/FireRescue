@@ -20,18 +20,23 @@
  */
 package game;
 
+import game.Action.ActionType;
 import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
 import game.token.PlayerToken;
 import interfaces.APListener;
+import interfaces.ActionProvider;
+import interfaces.ActionView;
 import interfaces.DiceRollListener;
 import interfaces.TurnPhaseListener;
 import interfaces.TurnPhaseListener.TurnPhase;
 import interfaces.TurnTaker;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import ui.BoardPanel;
 import ui.BoardPanel.SelectSquareListener;
@@ -42,7 +47,7 @@ import ui.playersDialog.PlayerInputData;
  * 
  * @author littlewoo
  */
-public class Game implements SelectSquareListener, TurnTaker {
+public class Game implements SelectSquareListener, TurnTaker, ActionProvider {
 	/** the width of the game board */
 	public static final int WIDTH = 10;
 	/** the height of the game board */
@@ -60,6 +65,9 @@ public class Game implements SelectSquareListener, TurnTaker {
 	
 	/** listeners for turn phases */
 	private List<TurnPhaseListener> turnPhaseListeners;
+	
+	/** action views, for displaying possible actions */
+	private List<ActionView> actionViews;
 	
 	/**
 	 * Construct a new game
@@ -145,6 +153,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 		} else {
 			board.advanceFire(x, y);
 		}
+		alertActionViews();
 	}
 	
 	/**
@@ -163,6 +172,7 @@ public class Game implements SelectSquareListener, TurnTaker {
 		currentPlayerIndex ++;
 		currentPlayerIndex = currentPlayerIndex % players.size();
 		getCurrentPlayer().newTurn();
+		alertActionViews();
 	} 
 	
 	/** 
@@ -247,12 +257,58 @@ public class Game implements SelectSquareListener, TurnTaker {
 			}
 		}
 	}
+	
+	/**
+	 * add an action view to the game
+	 * 
+	 * @param view the actionView to be added
+	 */
+	public void addActionView(ActionView view) {
+		if (actionViews == null) {
+			actionViews = new ArrayList<ActionView>();
+		}
+		actionViews.add(view);
+		alertActionViews();
+	}
+	
+	/**
+	 * Alert the action views with an updated set of actions
+	 */
+	public void alertActionViews() {
+		ActionCollection actions = getActions();
+		for (ActionView v : actionViews) {
+			v.displayActions(actions);
+		}
+	}
 
 	/** 
-	 * 
+	 * Place the walls on the board
 	 */
 	public void placeWalls() {
 		Walls w = new WallCreator().getWalls();
 		board.addWalls(w);
+	}
+
+	/* (non-Javadoc)
+	 * @see interfaces.ActionProvider#getActions(int, int)
+	 */
+	@Override
+	public ActionCollection getActions() {
+		List<Action> result = new ArrayList<Action>();
+		Player player = getCurrentPlayer();
+		Set<Point> adjSquares = board.getAdjacentSquares(player.getToken());
+		for (Point p : adjSquares) {
+			result.add(new Action(player, p.x, p.y, ActionType.MOVE));
+		}
+		return new ActionCollection(result);
+	}
+
+	/* (non-Javadoc)
+	 * @see interfaces.ActionProvider#performAction(game.Action)
+	 */
+	@Override
+	public void performAction(Action action) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,5 +1,5 @@
 /**
- *  File name: ActionProvider.java
+ *  File name: ActionView.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -20,32 +20,20 @@
  */
 package interfaces;
 
-import game.Action;
 import game.ActionCollection;
 
-import java.util.List;
-
 /**
- * Provides actions for square selections, and performs a selected action.
+ * Interface for an actionView: a view which provides some sort of display of 
+ * available actions.
  *
  * @author littlewoo
  */
-public interface ActionProvider {
+public interface ActionView {
 	
 	/**
-	 * Get a list of actions available 
+	 * Display a list of actions
 	 * 
-	 * @return a list of available actions
+	 * @param actions the actions to be displayed
 	 */
-	public ActionCollection getActions();
-	
-	/**
-	 * Perform an action
-	 *
-	 * @param x the x coordinate targetted by the action
-	 * @param y the y coordinate targetted by the action
-	 * @param the action to perform
-	 */
-	public void performAction(Action action);
-	
+	public void displayActions(ActionCollection actions);
 }

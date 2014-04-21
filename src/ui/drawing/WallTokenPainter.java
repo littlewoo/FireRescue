@@ -36,6 +36,7 @@ public class WallTokenPainter extends TokenPainter {
 	
 	private static final int WIDTH_PERCENTAGE = 100;
 	
+	@SuppressWarnings("unused")
 	private static final int THICKNESS = 5;
 	
 	private int north;

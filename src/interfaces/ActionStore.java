@@ -1,5 +1,5 @@
 /**
- *  File name: ActionProvider.java
+ *  File name: ActionStore.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -21,31 +21,24 @@
 package interfaces;
 
 import game.Action;
-import game.ActionCollection;
 
+import java.awt.Point;
 import java.util.List;
 
 /**
- * Provides actions for square selections, and performs a selected action.
- *
+ * Store for holding a collection of actions.
+ * 
  * @author littlewoo
  */
-public interface ActionProvider {
+public interface ActionStore {
+
+	/**
+	 * @return all of the actions 
+	 */
+	public List<Action> getActions();
 	
 	/**
-	 * Get a list of actions available 
-	 * 
-	 * @return a list of available actions
+	 * @return all of the actions relevant to a particular location
 	 */
-	public ActionCollection getActions();
-	
-	/**
-	 * Perform an action
-	 *
-	 * @param x the x coordinate targetted by the action
-	 * @param y the y coordinate targetted by the action
-	 * @param the action to perform
-	 */
-	public void performAction(Action action);
-	
+	public List<Action> getActions(Point p);
 }

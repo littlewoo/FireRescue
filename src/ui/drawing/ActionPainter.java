@@ -1,5 +1,5 @@
 /**
- *  File name: ActionProvider.java
+ *  File name: ActionPainter.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,34 +18,56 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package interfaces;
+package ui.drawing;
 
 import game.Action;
-import game.ActionCollection;
 
-import java.util.List;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Provides actions for square selections, and performs a selected action.
  *
  * @author littlewoo
  */
-public interface ActionProvider {
+public class ActionPainter {
 	
-	/**
-	 * Get a list of actions available 
+	/** The actions currently stored in the painter */
+	Map<Action, Point> actionLocs;
+	
+	
+	public ActionPainter() {
+		actionLocs = new HashMap<Action, Point>();
+	}
+
+	/** 
 	 * 
-	 * @return a list of available actions
+	 * @param g
 	 */
-	public ActionCollection getActions();
-	
-	/**
-	 * Perform an action
-	 *
-	 * @param x the x coordinate targetted by the action
-	 * @param y the y coordinate targetted by the action
-	 * @param the action to perform
+	public void paintAll(Graphics2D g) {
+		g.setColor(new Color(0.0f, 0.5f, 0.0f, 0.4f));
+		for (Point p : actionLocs.values()) {
+			g.fillOval(p.x-20, p.y-20, 40, 40);
+		}
+	}
+
+	/** 
+	 * 
+	 * @param a
+	 * @param x
+	 * @param y
 	 */
-	public void performAction(Action action);
-	
+	public void addAction(Action a, Point p) {
+		actionLocs.put(a, p);
+	}
+
+	/** 
+	 * Clear all the actions from the painter.
+	 */
+	public void clearActions() {
+		actionLocs.clear();
+	}
+
 }

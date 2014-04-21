@@ -20,22 +20,26 @@
  */
 package ui;
 
+import game.Action;
+import game.ActionCollection;
 import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
 import game.Game;
 import game.token.MovableToken;
+import interfaces.ActionView;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JPanel;
 
+import ui.drawing.ActionPainter;
 import ui.drawing.TokenPaintingManager;
 
 /**
@@ -43,7 +47,8 @@ import ui.drawing.TokenPaintingManager;
  * 
  * @author littlewoo
  */
-public class BoardPanel extends JPanel implements TokenChangeListener {
+public class BoardPanel extends JPanel 
+						implements TokenChangeListener, ActionView {
 	
 	private static final long serialVersionUID = 6945410881583290262L;
 	
@@ -77,6 +82,11 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	/** the manager responsible for drawing tokens */
 	private final TokenPaintingManager tokenPaintingManager;
 	
+	/** the painter which paints possible actions onto the panel */
+	private final ActionPainter actionPainter;
+	
+	private ActionCollection actions;
+	
 	/**
 	 * Make a new BoardPanel
 	 * 
@@ -85,6 +95,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	public BoardPanel(Game game) {
 		setBorder(null);
 		tokenPaintingManager = new TokenPaintingManager();
+		actionPainter = new ActionPainter();
 		
 		setPreferredSize(
 				new Dimension(MARGIN_SIZE + WIDTH * CELL_SIZE + MARGIN_SIZE, 
@@ -117,6 +128,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
         super.paintComponent(g2);
         drawLines(g2);
         tokenPaintingManager.drawAll(g2);
+        actionPainter.paintAll(g2);
     }
 	
 	/**
@@ -152,6 +164,7 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 * @param button the button used to click
 	 */
 	private void respondToMouseClick(int x, int y, int button) {
+		actionPainter.clearActions();
 		if (x < LEFT_MARGIN || x > RIGHT_MARGIN || 
 			y < TOP_MARGIN || y > BOTTOM_MARGIN) {
 			System.out.println("Click outside boundaries: " + x + ", " + y);
@@ -160,6 +173,9 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 			y = y - TOP_MARGIN;
 			int xSquare = x / CELL_SIZE;
 			int ySquare = y / CELL_SIZE;
+			Point p = new Point(xSquare, ySquare);
+			List<Action> acts = actions.getActions(p);
+			System.out.println(acts);
 			alertSelectSquareListeners(xSquare, ySquare, button);
 		}
 	}
@@ -218,22 +234,50 @@ public class BoardPanel extends JPanel implements TokenChangeListener {
 	 */
 	@Override
 	public void onTokenChange(TokenChangeEvent e) {
-		int xLoc = LEFT_MARGIN + CELL_SIZE * e.getX() + CELL_SIZE / 2;
-		int yLoc = TOP_MARGIN + CELL_SIZE * e.getY() + CELL_SIZE / 2;
+		Point p = getCellLoc(e.getX(), e.getY());
 		
 		switch (e.getChange()) {
 			case ADD:
-				tokenPaintingManager.addToken(e.getToken(), xLoc, yLoc);
+				tokenPaintingManager.addToken(e.getToken(), p.x, p.y);
 				break;
 			case REMOVE:
 				tokenPaintingManager.removeToken(e.getToken());
 				break;
 			case MOVE:
 				tokenPaintingManager.updateTokenLocation(
-						(MovableToken) e.getToken(), e.getX(), e.getY());
+						(MovableToken) e.getToken(), p.x, p.y);
 				break;
 		}
 		
+		repaint();
+	}
+	
+	/**
+	 * Convert a cell reference (x,y) into a pixel coordinate for the center of
+	 * the cell
+	 * 
+	 * @param x the x coordinate of the cell
+	 * @param y the y coordinate of the cell
+	 * @return the centre location of a cell
+	 */
+	private Point getCellLoc(int x, int y) {
+		int xLoc = LEFT_MARGIN + CELL_SIZE * x + CELL_SIZE / 2;
+		int yLoc = TOP_MARGIN + CELL_SIZE * y + CELL_SIZE / 2;
+		return new Point(xLoc, yLoc);
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see interfaces.ActionView#displayActions(java.util.List)
+	 */
+	@Override
+	public void displayActions(ActionCollection actions) {
+		actionPainter.clearActions();
+		this.actions = actions;
+		for (Action a : actions.getActions()) {
+			Point p = getCellLoc(a.getX(), a.getY());
+			actionPainter.addAction(a, p);
+		}
 		repaint();
 	}
 }
