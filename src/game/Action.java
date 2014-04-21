@@ -27,6 +27,11 @@ package game;
  */
 public class Action {
 	
+	/** Costs of actions */
+	private final static int MOVE_COST = 1;
+	private final static int MOVE_INTO_FIRE_COST = 2;
+	private final static int MOVE_INTO_SMOKE_COST = 1;
+	
 	/** The player the action applies to */
 	private final Player player;
 	
@@ -37,6 +42,9 @@ public class Action {
 	/** the type of the action */
 	private final ActionType type;
 	
+	/** the ap cost of the action */
+	private final int apCost;
+	
 	/**
 	 * Initialize an action
 	 * 
@@ -44,12 +52,14 @@ public class Action {
 	 * @param x the x location of the action
 	 * @param y the y location of the action
 	 * @param type the type of the action
+	 * @param cost the cost of the action
 	 */
 	public Action(Player p, int x, int y, ActionType type) {
 		player = p;
 		this.x = x;
 		this.y = y;
 		this.type = type;
+		apCost = type.getCost();
 	}
 	
 	/**
@@ -80,6 +90,13 @@ public class Action {
 		return type;
 	}
 	
+	/**
+	 * @return the apCost
+	 */
+	public int getApCost() {
+		return apCost;
+	}
+
 	@Override
 	public String toString() {
 		return "[Action: Player=" + player + ", x=" + x + ", y=" + y +
@@ -91,8 +108,25 @@ public class Action {
 	 *
 	 * @author littlewoo
 	 */
-	public enum ActionType {
-		MOVE;
+	public enum ActionType {		
+		MOVE("Move", MOVE_COST),
+		MOVE_INTO_SMOKE("Move into smoke", MOVE_INTO_SMOKE_COST),
+		MOVE_INTO_FIRE("Move into fire", MOVE_INTO_FIRE_COST);
+		
+		private int cost;
+		private String name;
+		ActionType(String name, int cost) {
+			this.name = name;
+			this.cost = cost;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public int getCost() {
+			return cost;
+		}
 	}
 
 }

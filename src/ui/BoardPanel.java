@@ -196,10 +196,13 @@ public class BoardPanel extends JPanel
 		if (actions != null && actions.size() > 0) {
 			JPopupMenu menu = new JPopupMenu();
 			for (final Action a : actions) {
-				JMenuItem item = menu.add(a.getType().toString());
+				String text = a.getType().getName() + " - " + 
+			                  a.getApCost() + "AP";
+				JMenuItem item = menu.add(text);
 				item.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						actionPainter.clearActions();
 						actionPerformer.performAction(a);
 					}
 				});

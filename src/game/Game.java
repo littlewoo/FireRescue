@@ -275,7 +275,13 @@ public class Game implements TurnTaker, ActionPerformer {
 		Player player = getCurrentPlayer();
 		Set<Point> possMoves = board.getPossibleMoves(player.getToken());
 		for (Point p : possMoves) {
-			result.add(new Action(player, p.x, p.y, ActionType.MOVE));
+			ActionType type;
+			if (board.isFireAt(p)) {
+				type = ActionType.MOVE_INTO_FIRE;
+			} else {
+				type = ActionType.MOVE;
+			}
+			result.add(new Action(player, p.x, p.y, type));
 		}
 		return new ActionCollection(result);
 	}
@@ -288,15 +294,20 @@ public class Game implements TurnTaker, ActionPerformer {
 		int x = action.getX();
 		int y = action.getY();
 		Player p = action.getPlayer();
-		switch (action.getType()) {
-			case MOVE:
-				board.movePlayerToken(x, y, p);
-				break;
-			default:
-				throw new IllegalArgumentException(
-						"Action type not recognised.");
-					
+		if (p.performAction(action.getApCost())) {
+			switch (action.getType()) {
+				case MOVE:
+				case MOVE_INTO_SMOKE:
+				case MOVE_INTO_FIRE:
+					board.movePlayerToken(x, y, p);
+					break;
+				default:
+					throw new IllegalArgumentException(
+							"Action type not recognised.");
+						
+			}
+			alertActionViews();	
+		} else {
 		}
-		alertActionViews();
 	}
 }

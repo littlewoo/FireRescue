@@ -242,13 +242,8 @@ public class Board {
 	public void movePlayerToken(int x, int y, Player player) {
 		checkCoordinates(x, y, true);
 		PlayerToken t = player.getToken();
-		Point p = tokenLocs.get(t);
-		int cost = Math.abs(x-p.x) + Math.abs(y-p.y);
-		if (player.performAction(cost)) {
-			removePlayerToken(t);
-			addPlayerToken(x, y, t);
-		} else {
-		}
+		removePlayerToken(t);
+		addPlayerToken(x, y, t);
 	}
 	
 	/**
@@ -302,6 +297,13 @@ public class Board {
 		return result;
 	}
 	
+	/**
+	 * @return true if there is a fire at a given location
+	 */
+	public boolean isFireAt(Point p) {
+		return fireLayer.get(p) instanceof FireToken;
+	}
+
 	/**
 	 * Check that a set of coordinates is in bounds. The method provides the 
 	 * option of throwing an exception if the coordinates are out of bounds.
