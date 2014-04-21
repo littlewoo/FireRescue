@@ -1,5 +1,5 @@
 /**
- *  File name: ActionProvider.java
+ *  File name: ActionPerformer.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -21,21 +21,13 @@
 package interfaces;
 
 import game.Action;
-import game.ActionCollection;
 
 /**
  * Provides actions for square selections, and performs a selected action.
  *
  * @author littlewoo
  */
-public interface ActionProvider {
-	
-	/**
-	 * Get a list of actions available 
-	 * 
-	 * @return a list of available actions
-	 */
-	public ActionCollection getActions();
+public interface ActionPerformer {
 	
 	/**
 	 * Perform an action

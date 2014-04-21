@@ -21,11 +21,13 @@
 package ui;
 
 import game.Action;
+import game.Action.ActionType;
 import game.ActionCollection;
 import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
 import game.Game;
 import game.token.MovableToken;
+import interfaces.ActionPerformer;
 import interfaces.ActionView;
 
 import java.awt.Color;
@@ -37,7 +39,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenuItem;
@@ -74,23 +75,17 @@ public class BoardPanel extends JPanel
 	/** the y value for the bottom margin */
 	private final static int BOTTOM_MARGIN = MARGIN_SIZE + CELL_SIZE * HEIGHT;
 	
-	/** integer constant for the left mouse button */
-	public final static int LEFT_MOUSE_BUTTON = MouseEvent.BUTTON1;
-	/** integer constant for the middle mouse button */
-	public final static int MIDDLE_MOUSE_BUTTON = MouseEvent.BUTTON2;
-	/** integer constant for the right mouse button */
-	public final static int RIGHT_MOUSE_BUTTON = MouseEvent.BUTTON3;
-	
-	/** the listeners which are listening for square selections */
-	private List<SelectSquareListener> selectSquareListeners;
-	
 	/** the manager responsible for drawing tokens */
 	private final TokenPaintingManager tokenPaintingManager;
 	
 	/** the painter which paints possible actions onto the panel */
 	private final ActionPainter actionPainter;
-	
+	/** The list of currently available actions */
 	private ActionCollection actions;
+	/** the performer which performs actions for this panel */
+	private final ActionPerformer actionPerformer;
+	/** default action on left click */
+	private final static ActionType DEFAULT_ACTION = ActionType.MOVE; 
 	
 	/**
 	 * Make a new BoardPanel
@@ -101,14 +96,12 @@ public class BoardPanel extends JPanel
 		setBorder(null);
 		tokenPaintingManager = new TokenPaintingManager();
 		actionPainter = new ActionPainter();
+		actionPerformer = game;
 		
 		setPreferredSize(
 				new Dimension(MARGIN_SIZE + WIDTH * CELL_SIZE + MARGIN_SIZE, 
 							  MARGIN_SIZE + HEIGHT * CELL_SIZE + MARGIN_SIZE));
 		setBackground(new Color(160, 82, 45));
-		
-		selectSquareListeners = new ArrayList<SelectSquareListener>();
-		addSelectSquareListener(game);
 		
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -180,6 +173,14 @@ public class BoardPanel extends JPanel
 			int ySquare = y / CELL_SIZE;
 			Point p = new Point(xSquare, ySquare);
 			List<Action> acts = actions.getActions(p);
+			if (button == MouseEvent.BUTTON1) {
+				for (Action a : acts) {
+					if (a.getType() == DEFAULT_ACTION) {
+						actionPerformer.performAction(a);
+						return;
+					}
+				}
+			}			
 			showActionMenu(acts, x, y);
 		}
 	}
@@ -199,59 +200,13 @@ public class BoardPanel extends JPanel
 				item.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						alertSelectSquareListeners(a.getX(), a.getY(), LEFT_MOUSE_BUTTON);
+						actionPerformer.performAction(a);
 					}
 				});
 				
 			}
 			menu.show(this, x, y);
 		}
-	}
-	
-	/**
-	 * Add a listener to listen to when a square has been selected, by e.g. 
-	 * a mouse click or keyboard action.
-	 * 
-	 * @param listener the listener
-	 */
-	public void addSelectSquareListener(SelectSquareListener listener) {
-		selectSquareListeners.add(listener);
-	}
-	
-	/**
-	 * Alert all listeners that a square has been selected
-	 * 
-	 * @param x the x index of the square
-	 * @param y the y index of the square
-	 * @param button the button used in the selection
-	 */
-	private void alertSelectSquareListeners(final int x, final int y, 
-											final int button) {
-		for (final SelectSquareListener l : selectSquareListeners) {
-			Thread t = new Thread() {
-				public void run() {
-					l.onSelectSquare(x, y, button);
-				}
-			};
-			t.start();
-		}
-	}
-	
-	/**
-	 * A listener for events where a square is selected, e.g. by a mouse click
-	 * or keyboard action.
-	 * 
-	 * @author littlewoo
-	 */
-	public interface SelectSquareListener {
-		/**
-		 * This method is called whenever a square is selected.
-		 * 
-		 * @param x the x index of the selected square
-		 * @param y the y index of the selected square
-		 * @param button the button used in selecting the square
-		 */
-		public void onSelectSquare(int x, int y, int button);
 	}
 
 	/**

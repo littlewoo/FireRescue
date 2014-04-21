@@ -25,7 +25,7 @@ import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
 import game.token.PlayerToken;
 import interfaces.APListener;
-import interfaces.ActionProvider;
+import interfaces.ActionPerformer;
 import interfaces.ActionView;
 import interfaces.DiceRollListener;
 import interfaces.TurnPhaseListener;
@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import ui.BoardPanel;
-import ui.BoardPanel.SelectSquareListener;
 import ui.playersDialog.PlayerInputData;
 
 /**
@@ -47,7 +45,7 @@ import ui.playersDialog.PlayerInputData;
  * 
  * @author littlewoo
  */
-public class Game implements SelectSquareListener, TurnTaker, ActionProvider {
+public class Game implements TurnTaker, ActionPerformer {
 	/** the width of the game board */
 	public static final int WIDTH = 10;
 	/** the height of the game board */
@@ -134,26 +132,6 @@ public class Game implements SelectSquareListener, TurnTaker, ActionProvider {
 			int y = rand.nextInt(HEIGHT);
 			success = board.addPlayerToken(x, y, t);
 		}
-	}
-	
-	/**
-	 * Respond to a square being selected
-	 * 
-	 * @param x the x coordinate of the selected square
-	 * @param y the y coordinate of the selected square
-	 * @param button which mouse button was used in making the selection
-	 * 
-	 * TODO: Remove the button stuff - either refactor as 'alternate selection'
-	 * or something, or remove it entirely.
-	 */
-	@Override
-	public void onSelectSquare(int x, int y, int button) {
-		if (button == BoardPanel.LEFT_MOUSE_BUTTON) {
-			board.movePlayerToken(x, y, getCurrentPlayer());
-		} else {
-			board.advanceFire(x, y);
-		}
-		alertActionViews();
 	}
 	
 	/**
@@ -289,11 +267,10 @@ public class Game implements SelectSquareListener, TurnTaker, ActionProvider {
 		board.addWalls(w);
 	}
 
-	/* (non-Javadoc)
-	 * @see interfaces.ActionProvider#getActions(int, int)
+	/** 
+	 * @return a list of actions 
 	 */
-	@Override
-	public ActionCollection getActions() {
+	private ActionCollection getActions() {
 		List<Action> result = new ArrayList<Action>();
 		Player player = getCurrentPlayer();
 		Set<Point> possMoves = board.getPossibleMoves(player.getToken());
@@ -304,11 +281,22 @@ public class Game implements SelectSquareListener, TurnTaker, ActionProvider {
 	}
 
 	/* (non-Javadoc)
-	 * @see interfaces.ActionProvider#performAction(game.Action)
+	 * @see interfaces.ActionPerformer#performAction(game.Action)
 	 */
 	@Override
 	public void performAction(Action action) {
-		// TODO Auto-generated method stub
-		
+		int x = action.getX();
+		int y = action.getY();
+		Player p = action.getPlayer();
+		switch (action.getType()) {
+			case MOVE:
+				board.movePlayerToken(x, y, p);
+				break;
+			default:
+				throw new IllegalArgumentException(
+						"Action type not recognised.");
+					
+		}
+		alertActionViews();
 	}
 }
