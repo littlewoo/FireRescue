@@ -23,8 +23,6 @@ package interfaces;
 import game.Action;
 import game.ActionCollection;
 
-import java.util.List;
-
 /**
  * Provides actions for square selections, and performs a selected action.
  *

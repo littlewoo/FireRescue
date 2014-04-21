@@ -296,8 +296,8 @@ public class Game implements SelectSquareListener, TurnTaker, ActionProvider {
 	public ActionCollection getActions() {
 		List<Action> result = new ArrayList<Action>();
 		Player player = getCurrentPlayer();
-		Set<Point> adjSquares = board.getAdjacentSquares(player.getToken());
-		for (Point p : adjSquares) {
+		Set<Point> possMoves = board.getPossibleMoves(player.getToken());
+		for (Point p : possMoves) {
 			result.add(new Action(player, p.x, p.y, ActionType.MOVE));
 		}
 		return new ActionCollection(result);

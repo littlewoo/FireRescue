@@ -20,6 +20,7 @@
  */
 package game;
 
+import game.Walls.Direction;
 import game.token.FireToken;
 import game.token.PlayerToken;
 import game.token.SmokeToken;
@@ -47,6 +48,8 @@ public class Board {
 	private Map<Point, ThreatToken> fireLayer;
 	/** The player tokens */
 	private Map<Point, PlayerToken> playersLayer;
+	/** the walls on the board */
+	private Walls walls;
 
 	/** Listeners for changes to the tokens in the game. */
 	private List<TokenChangeListener> tokenChangeListeners;
@@ -67,6 +70,7 @@ public class Board {
 	 * @param w 
 	 */
 	public void addWalls(Walls w) {
+		walls = w;
 		for (int x=0; x<getWidth(); x++) {
 			for (int y=0; y<getHeight(); y++) {
 				addToken(x, y, new WallToken(w.getWalls(x, y)));
@@ -79,7 +83,7 @@ public class Board {
 	 * 
 	 * @return the set of squares
 	 */
-	public Set<Point> getAdjacentSquares(Token t) {
+	private Set<Point> getAdjacentSquares(Token t) {
 		Point p = tokenLocs.get(t);
 		if (p != null) {
 			return getAdjacentSquares(p.x, p.y);
@@ -245,6 +249,57 @@ public class Board {
 			addPlayerToken(x, y, t);
 		} else {
 		}
+	}
+	
+	/**
+	 * Check whether a move between two adjacent squares is passable by a player
+	 * token. Checks for walls and other player tokens.
+	 * 
+	 * @param p1 the source square
+	 * @param p2 the destination square
+	 * @return true if the move is possible
+	 */
+	private boolean isMovable(Point p1, Point p2) {
+		if (getAdjacentSquares(p1.x, p1.y).contains(p2)) {
+			Direction dir;
+			if (p1.x == p2.x) {
+				if (p1.y > p2.y) {
+					dir = Direction.NORTH;
+				} else {
+					dir = Direction.SOUTH;
+				}
+			} else {
+				if (p1.x > p2.x){
+					dir = Direction.WEST;
+				} else {
+					dir = Direction.EAST;
+				}
+			}
+			boolean passable = walls.isPassable(p1.x, p1.y, dir);
+			boolean empty = playersLayer.get(p2) == null;
+			return passable && empty;
+		} else {
+			throw new IllegalArgumentException("Points not adjacent.");
+		}
+	}
+	
+	/**
+	 * Get a set of possible single square moves for a player token. This makes 
+	 * no checks as to other factors limiting a player's movement (notably AP 
+	 * cost of the move, and whether the player can afford to make it).
+	 * 
+	 * @param player the playerToken to get moves for
+	 * @return a set of possible moves
+	 */
+	public Set<Point> getPossibleMoves(PlayerToken player) {
+		Set<Point> result = new HashSet<Point>();
+		Point loc = tokenLocs.get(player);
+		for (Point p : getAdjacentSquares(player)) {
+			if (isMovable(loc, p)) {
+				result.add(p);
+			}
+		}
+		return result;
 	}
 	
 	/**

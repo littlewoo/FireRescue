@@ -33,11 +33,16 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import ui.drawing.ActionPainter;
 import ui.drawing.TokenPaintingManager;
@@ -175,8 +180,31 @@ public class BoardPanel extends JPanel
 			int ySquare = y / CELL_SIZE;
 			Point p = new Point(xSquare, ySquare);
 			List<Action> acts = actions.getActions(p);
-			System.out.println(acts);
-			alertSelectSquareListeners(xSquare, ySquare, button);
+			showActionMenu(acts, x, y);
+		}
+	}
+	
+	/**
+	 * Show a menu of possible actions for a square
+	 * 
+	 * @param actions the possible actions
+	 * @param x the x coordinate to display the menu
+	 * @param y the y coordinate to display the menu
+	 */
+	private void showActionMenu(List<Action> actions, int x, int y) {
+		if (actions != null && actions.size() > 0) {
+			JPopupMenu menu = new JPopupMenu();
+			for (final Action a : actions) {
+				JMenuItem item = menu.add(a.getType().toString());
+				item.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						alertSelectSquareListeners(a.getX(), a.getY(), LEFT_MOUSE_BUTTON);
+					}
+				});
+				
+			}
+			menu.show(this, x, y);
 		}
 	}
 	
