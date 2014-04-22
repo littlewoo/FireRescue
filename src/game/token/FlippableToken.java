@@ -1,5 +1,5 @@
 /**
- *  File name: FireToken.java
+ *  File name: FlippableToken.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -20,21 +20,20 @@
  */
 package game.token;
 
-import ui.drawing.TokenPainter;
-import ui.drawing.FireTokenPainter;
-
 /**
- * A token representing Fire.
- *
+ * Interface for tokens which can be flipped, to reveal a different token or a 
+ * change to this token.
+ * 
  * @author littlewoo
  */
-public class FireToken extends ThreatToken {
-
+public interface FlippableToken extends Token {
 	/**
-	 * @return the painter for this token
+	 * Flip the token. The flipped token returned by this method represents this
+	 * token, but changed in some way as if flipped over. Note that the returned
+	 * token need not be the same object, and need not even be itself flippable
+	 * (i.e. flipping a token may be a one-way procedure).
+	 * 
+	 * @return the flipped token
 	 */
-	@Override
-	public TokenPainter getPainter() {
-		return new FireTokenPainter();
-	}
+	public Token flip();
 }
