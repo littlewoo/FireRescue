@@ -173,18 +173,30 @@ public class BoardPanel extends JPanel
 			int ySquare = y / CELL_SIZE;
 			Point p = new Point(xSquare, ySquare);
 			List<Action> acts = actions.getActions(p);
-			if (button == MouseEvent.BUTTON1) {
-				for (Action a : acts) {
-					if (a.getType() == DEFAULT_ACTION) {
-						actionPerformer.performAction(a);
-						return;
+			if (acts != null && acts.size() > 0) {
+				if (button == MouseEvent.BUTTON1) {
+					for (Action a : acts) {
+						if (a.getType() == DEFAULT_ACTION) {
+							performAction(a);
+							return;
+						}
 					}
-				}
-			}			
-			showActionMenu(acts, x, y);
+				}			
+				showActionMenu(acts, x, y);
+			}
 		}
 	}
 	
+	/** 
+	 * Perform a given action
+	 * 
+	 * @param a the action to perform
+	 */
+	private void performAction(Action a) {
+		actionPainter.clearActions();
+		actionPerformer.performAction(a);
+	}
+
 	/**
 	 * Show a menu of possible actions for a square
 	 * 
@@ -202,8 +214,7 @@ public class BoardPanel extends JPanel
 				item.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						actionPainter.clearActions();
-						actionPerformer.performAction(a);
+						performAction(a);
 					}
 				});
 				
