@@ -281,7 +281,10 @@ public class Game implements TurnTaker, ActionPerformer {
 			} else {
 				type = ActionType.MOVE;
 			}
-			result.add(new Action(player, p.x, p.y, type));
+			Action a = new Action(player, p.x, p.y, type);
+			if (player.canPerformAction(a)) {
+				result.add(a);
+			}
 		}
 		return new ActionCollection(result);
 	}
@@ -294,7 +297,7 @@ public class Game implements TurnTaker, ActionPerformer {
 		int x = action.getX();
 		int y = action.getY();
 		Player p = action.getPlayer();
-		if (p.performAction(action.getApCost())) {
+		if (p.performAction(action)) {
 			switch (action.getType()) {
 				case MOVE:
 				case MOVE_INTO_SMOKE:

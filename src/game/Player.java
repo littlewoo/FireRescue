@@ -56,15 +56,15 @@ public class Player {
 	
 	/**
 	 * Have the player perform an action, and record the associated AP loss.
+	 * @param action TODO
 	 * 
-	 * @param cost the AP cost of the action performed
 	 * @return true if the action was successful
 	 */
-	public boolean performAction(int cost) {
-		if (cost > ap) {
+	public boolean performAction(Action action) {
+		if (! canPerformAction(action)) {
 			return false;
 		}
-		ap -= cost;
+		ap -= action.getApCost();
 		alertAPListeners();
 		return true;
 	}
@@ -88,7 +88,7 @@ public class Player {
 	/**
 	 * @return the ap
 	 */
-	public int getAp() {
+	public int getAP() {
 		return ap;
 	}
 	
@@ -111,5 +111,16 @@ public class Player {
 		for (APListener al : apListeners) {
 			al.onAPChange(token, ap);
 		}
+	}
+
+	/** 
+	 * Check whether the player has sufficient AP remaining to perform an 
+	 * action.
+	 * 
+	 * @param a the action to be checked
+	 * @return true if the action is performable
+	 */
+	public boolean canPerformAction(Action a) {
+		return a.getApCost() <= getAP();
 	}
 }
