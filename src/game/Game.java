@@ -23,6 +23,7 @@ package game;
 import game.Action.ActionType;
 import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
+import game.token.POIToken;
 import game.token.PlayerToken;
 import interfaces.APListener;
 import interfaces.ActionPerformer;
@@ -35,7 +36,6 @@ import interfaces.TurnTaker;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import ui.playersDialog.PlayerInputData;
@@ -50,6 +50,20 @@ public class Game implements TurnTaker, ActionPerformer {
 	public static final int WIDTH = 10;
 	/** the height of the game board */
 	public static final int HEIGHT = 8;
+	
+	/** if this is true, newly placed POIs replace fire. If not, they cannot
+	 *  be placed on fire. */
+	private static final boolean POI_REPLACES_FIRE = true;
+	/** the total number of POI tokens in the game */
+	private static final int POI_COUNT = 15;
+	/** the number of blank tokens for each victim token */
+	private static final double POI_RATIO = 0.5;
+	/** the number of POI tokens on the board at the start of the game */
+	private static final int INITIAL_POI_COUNT = 3;
+	/** all of the POI tokens in the game */
+	private List<POIToken> pointsOfInterest;
+	/** the index of the next POI token to be placed */
+	private int nextPOI;
 
 	/** the index of the current player */
 	private int currentPlayerIndex;
@@ -73,8 +87,10 @@ public class Game implements TurnTaker, ActionPerformer {
 	 */
 	public Game(List<PlayerInputData> data) {
 		createPlayers(data);		
-		board = new Board();
+		board = new Board(WIDTH, HEIGHT);
 		diceRoller = new DiceRoller();
+		pointsOfInterest = POIToken.getPOITokenStack(POI_COUNT, POI_RATIO);
+		nextPOI = 0;
 	}
 	
 	/**
@@ -125,11 +141,10 @@ public class Game implements TurnTaker, ActionPerformer {
 	 * @param t the token to be placed
 	 */
 	private void placePlayerTokenRandomly(PlayerToken t) {
-		Random rand = new Random(System.currentTimeMillis());
 		boolean success = false;
 		while (!success) {
-			int x = rand.nextInt(WIDTH);
-			int y = rand.nextInt(HEIGHT);
+			int x = diceRoller.rollDie(8, false).roll;
+			int y = diceRoller.rollDie(6, false).roll;
 			success = board.addPlayerToken(x, y, t);
 		}
 	}
@@ -139,6 +154,30 @@ public class Game implements TurnTaker, ActionPerformer {
 	 */
 	public Player getCurrentPlayer() {
 		return players.get(currentPlayerIndex);
+	}
+	
+	/**
+	 * Place the POI tokens on the board
+	 */
+	public void placeInitialPOITokens() {
+		for (int i=0; i<INITIAL_POI_COUNT; i++) {
+			System.out.println("Placing POI");
+			placePOITokenRandomly();
+		}
+	}
+	
+	/**
+	 * Place a POI token randomly. 
+	 */
+	public void placePOITokenRandomly() {
+		if (nextPOI < pointsOfInterest.size()) {
+			POIToken pt = pointsOfInterest.get(nextPOI);
+			int x = diceRoller.rollDie(8, false).roll;
+			int y = diceRoller.rollDie(6, false).roll;
+			System.out.println("\tat (" + x + "," + y + ")");
+			board.addPOIToken(new Point(x, y), pt, POI_REPLACES_FIRE);
+			nextPOI ++;
+		}
 	}
 
 	/**

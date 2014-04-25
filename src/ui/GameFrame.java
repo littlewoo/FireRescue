@@ -71,6 +71,7 @@ public class GameFrame extends JFrame {
 		pack();
 		
 		game.addActionView(boardPanel);
+		game.placeInitialPOITokens();
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

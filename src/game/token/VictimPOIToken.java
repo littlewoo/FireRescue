@@ -20,9 +20,7 @@
  */
 package game.token;
 
-import java.awt.Color;
-
-import ui.drawing.GenericTokenPainter;
+import ui.drawing.POITokenPainter;
 import ui.drawing.TokenPainter;
 
 /**
@@ -46,7 +44,7 @@ public class VictimPOIToken extends POIReverseToken {
 	@Override
 	public TokenPainter getPainter() {
 		// TODO Auto-generated method stub
-		return new GenericTokenPainter("V", Color.CYAN);
+		return new POITokenPainter("V");
 	}
 
 }

@@ -1,5 +1,5 @@
 /**
- *  File name: BlankPOIToken.java
+ *  File name: POITokenPainter.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,30 +18,33 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.token;
+package ui.drawing;
 
-import ui.drawing.POITokenPainter;
-import ui.drawing.TokenPainter;
+import java.awt.Color;
 
 /**
+ * Painter for painting a point of interest token.
  *
  * @author littlewoo
  */
-public class BlankPOIToken extends POIReverseToken {
+public class POITokenPainter extends GenericTokenPainter {
 	
-	/** 
-	 * @param reverse the token on the reverse of this one
-	 */
-	public BlankPOIToken(POIToken reverse) {
-		super(reverse);
-	}
+	/** the diameter of the token as a percentage of the cell size */
+	private static final int DIAMETER_PERCENTAGE = 45;
+	
+	/** the colours for painting a POI token */
+	private static final Color SYMBOL_COLOUR = Color.WHITE;
+	private static final Color BG_COLOUR = new Color(100, 170, 255);
+	private static final Color BORDER_COLOUR = new Color(100, 170, 255);
 
-	/* (non-Javadoc)
-	 * @see game.token.Token#getPainter()
+	/** 
+	 * Make a new POI token painter
+	 * 
+	 * @param symbol the symbol of the token
 	 */
-	@Override
-	public TokenPainter getPainter() {
-		return new POITokenPainter("");
+	public POITokenPainter(String symbol) {
+		super(symbol, DIAMETER_PERCENTAGE, 
+				SYMBOL_COLOUR, BG_COLOUR, BORDER_COLOUR);
 	}
 
 }

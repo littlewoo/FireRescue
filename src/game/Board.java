@@ -22,6 +22,7 @@ package game;
 
 import game.Walls.Direction;
 import game.token.FireToken;
+import game.token.POIToken;
 import game.token.PlayerToken;
 import game.token.SmokeToken;
 import game.token.ThreatToken;
@@ -45,9 +46,12 @@ public class Board {
 	/** The locations of all the tokens in the game */
 	private Map<Token, Point> tokenLocs;
 	/** The fire tokens. */
-	private Map<Point, ThreatToken> fireLayer;
+	private TokenLayer<ThreatToken> fireLayer;
 	/** The player tokens */
-	private Map<Point, PlayerToken> playersLayer;
+	private TokenLayer<PlayerToken> playersLayer;
+	/** The POI tokens */
+	private TokenLayer<POIToken> poiLayer;
+	
 	/** the walls on the board */
 	private Walls walls;
 
@@ -57,10 +61,11 @@ public class Board {
 	/**
 	 * Construct a new Board.
 	 */
-	public Board() {
-		playersLayer = new HashMap<Point, PlayerToken>();
+	public Board(int width, int height) {
 		tokenLocs = new HashMap<Token, Point>();
-		fireLayer = new HashMap<Point, ThreatToken>();
+		playersLayer = new TokenLayer<PlayerToken>(width, height);
+		fireLayer = new TokenLayer<ThreatToken>(width, height);
+		poiLayer = new TokenLayer<POIToken>(width, height);
 
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
 	}
@@ -73,7 +78,7 @@ public class Board {
 		walls = w;
 		for (int x=0; x<getWidth(); x++) {
 			for (int y=0; y<getHeight(); y++) {
-				addToken(x, y, new WallToken(w.getWalls(x, y)));
+				addToken(new Point(x, y), new WallToken(w.getWalls(x, y)));
 			}
 		}
 	}
@@ -130,20 +135,19 @@ public class Board {
 	private int getHeight() {
 		return Game.HEIGHT;
 	}
-
+	
 	/**
-	 * Add a token to the board, in the location given. Note that this method
-	 * makes no attempt to check whether a token is already on the location
-	 * provided.
+	 * Add a token to the board, in the location given. Note that any number of
+	 * tokens of any type can be added to the same location. This method makes
+	 * no attempt to check whether a token is already on the location provided.
 	 * 
-	 * @param x the x coordinate to place the token in
-	 * @param y the y coordinate
+	 * @param p the location to add the token to
 	 * @param t the token to be added
 	 */
-	public void addToken(int x, int y, Token t) {
-		checkCoordinates(x, y, true);
-		tokenLocs.put(t, new Point(x, y));
-		TokenChangeEvent e = new TokenChangeEvent(x, y, t, TokenChangeType.ADD);
+	public void addToken(Point p, Token t) {
+		checkCoordinates(p.x, p.y, true);
+		tokenLocs.put(t, p);
+		TokenChangeEvent e = new TokenChangeEvent(p.x, p.y, t, TokenChangeType.ADD);
 		alertTokenChangeListeners(e);
 	}
 
@@ -158,12 +162,11 @@ public class Board {
 	 */
 	public boolean addPlayerToken(int x, int y, PlayerToken t) {
 		Point p = new Point(x, y);
-		if (playersLayer.get(p) != null) {
-			return false;
+		if (playersLayer.addToken(t, p)) {
+			addToken(p, t);
+			return true;
 		}
-		addToken(x, y, t);
-		playersLayer.put(p, t);
-		return true;
+		return false;
 	}
 
 	/**
@@ -173,10 +176,37 @@ public class Board {
 	 * @param x the x coordinate to place the token in
 	 * @param y the y coordinate to place the token in
 	 * @param t the token
+	 * @return true if the token could be added (i.e. there was no threat token
+	 * 				already present
 	 */
-	public void addThreatToken(int x, int y, ThreatToken t) {
-		addToken(x, y, t);
-		fireLayer.put(new Point(x, y), t);
+	public boolean addThreatToken(int x, int y, ThreatToken t) {
+		Point p = new Point(x, y);
+		if (fireLayer.getTokenAt(p) != null) {
+			return false;
+		}
+		addToken(p, t);
+		fireLayer.addToken(t, new Point(x, y));
+		return true;
+	}
+	
+	/**
+	 * Add a POI token to the board, in the location given. This method will not
+	 * allow a POI token to be placed on top of another.
+	 * 
+	 * @param p the point to add the token at
+	 * @param t the token to add
+	 * @param replaceFire if true, then the token will be replace fire, if 
+	 * 					  false then the token cannot be placed on fire
+	 * @return true if the token could be added (i.e. there was no POI token or
+	 * 				fire already present)
+	 */
+	public boolean addPOIToken(Point p, POIToken t, boolean replaceFire) {
+		if (poiLayer.getTokenAt(p) != null && !replaceFire && isFireAt(p)) {
+			return false;
+		}
+		addToken(p, t);
+		poiLayer.addToken(t, p);
+		return true;
 	}
 
 	/**
@@ -203,7 +233,7 @@ public class Board {
 	public void removePlayerToken(PlayerToken t) {
 		Point p = tokenLocs.get(t);
 		if (p != null) {
-			playersLayer.remove(p);
+			playersLayer.removeToken(p);
 			removeToken(t);
 		}
 	}
@@ -228,7 +258,7 @@ public class Board {
 	private void removeThreatToken(int x, int y) {
 		Point p = new Point(x, y);
 		System.out.println("Removing threat token by location: " + p);
-		ThreatToken t = fireLayer.remove(p);
+		ThreatToken t = fireLayer.removeToken(p);
 		removeToken(t);
 	}
 
@@ -271,7 +301,7 @@ public class Board {
 				}
 			}
 			boolean passable = walls.isPassable(p1.x, p1.y, dir);
-			boolean empty = playersLayer.get(p2) == null;
+			boolean empty = playersLayer.getTokenAt(p2) == null;
 			return passable && empty;
 		} else {
 			throw new IllegalArgumentException("Points not adjacent.");
@@ -301,7 +331,7 @@ public class Board {
 	 * @return true if there is a fire at a given location
 	 */
 	public boolean isFireAt(Point p) {
-		return fireLayer.get(p) instanceof FireToken;
+		return fireLayer.getTokenAt(p) instanceof FireToken;
 	}
 
 	/**
@@ -335,7 +365,7 @@ public class Board {
 	 */
 	void advanceFire(int x, int y) {
 		Point p = new Point(x, y);
-		ThreatToken t = fireLayer.get(p);
+		ThreatToken t = fireLayer.getTokenAt(p);
 		if (t == null) {
 			addThreatToken(x, y, new SmokeToken());
 		} else if (t instanceof SmokeToken) {
@@ -371,7 +401,7 @@ public class Board {
 		for (int x = 0; x < getWidth(); x++) {
 			for (int y = 0; y < getHeight(); y++) {
 				Point p = new Point(x, y);
-				ThreatToken t = fireLayer.get(p);
+				ThreatToken t = fireLayer.getTokenAt(p);
 				if (t != null && tokenLocs.get(t) == null) {
 					System.out.println("Item is in the fire layer but not tokenlocs: " + p);
 					System.out.println("FireLayer:\n" + fireLayer);
@@ -395,7 +425,7 @@ public class Board {
 		Set<Point> testPoints = getAdjacentSquares(t);
 		
 		for (Point np : testPoints) {
-			ThreatToken tt = fireLayer.get(np);
+			ThreatToken tt = fireLayer.getTokenAt(np);
 			if (tt instanceof SmokeToken) {
 				removeThreatToken(tt);
 				FireToken ft = new FireToken();
@@ -421,11 +451,11 @@ public class Board {
 		for (Point p : directions) {
 			int xOffset = x + p.x;
 			int yOffset = y + p.y;
-			ThreatToken t = fireLayer.get(new Point(xOffset, yOffset));
+			ThreatToken t = fireLayer.getTokenAt(new Point(xOffset, yOffset));
 			while (t != null && t instanceof FireToken) {
 				xOffset += p.x;
 				yOffset += p.y;
-				t = fireLayer.get(new Point(xOffset, yOffset));
+				t = fireLayer.getTokenAt(new Point(xOffset, yOffset));
 			}
 			if (t != null) {
 				removeThreatToken(t);

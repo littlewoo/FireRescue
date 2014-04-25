@@ -35,6 +35,12 @@ public abstract class ThreatTokenPainter extends GenericTokenPainter {
 	 * the square it is in
 	 */
 	private static final int DIAMETER_PERCENTAGE = 70;
+	
+	/** the background colour */
+	private static final Color bgColour = Color.black;
+	
+	/** the border colour */
+	private static final Color borderColour = Color.red;
 
 	/**
 	 * create a new threat token painter
@@ -43,7 +49,7 @@ public abstract class ThreatTokenPainter extends GenericTokenPainter {
 	 * @param symbolColour the colour of the symbol
 	 */
 	public ThreatTokenPainter(String symbol, Color symbolColour) {
-		super(symbol, symbolColour);
+		super(symbol, symbolColour, bgColour, borderColour);
 	}
 
 	/**

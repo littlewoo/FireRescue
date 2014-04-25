@@ -20,11 +20,10 @@
  */
 package game.token;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import ui.drawing.GenericTokenPainter;
+import ui.drawing.POITokenPainter;
 import ui.drawing.TokenPainter;
 
 /**
@@ -56,7 +55,7 @@ public class POIToken implements FlippableToken {
 	 */
 	@Override
 	public TokenPainter getPainter() {
-		return new GenericTokenPainter("?", Color.CYAN);
+		return new POITokenPainter("?");
 	}
 
 	/* (non-Javadoc)

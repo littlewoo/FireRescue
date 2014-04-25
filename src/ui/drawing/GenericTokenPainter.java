@@ -33,9 +33,6 @@ import java.awt.Graphics2D;
  */
 public class GenericTokenPainter extends TokenPainter {
 	
-	/** the diameter of the token, as a percentage of the cell size */
-	private static int TOKEN_DIAMETER_PERCENTAGE = 66;
-	
 	/**
 	 * the offset from the centre of the token for where the token's character
 	 * label should be drawn
@@ -48,20 +45,53 @@ public class GenericTokenPainter extends TokenPainter {
 	/** the font of the token character label */
 	private static Font TOKEN_CHAR_FONT = 
 			new Font(Font.MONOSPACED, Font.BOLD, TOKEN_CHAR_FONT_SIZE);
+	
+	/** the default diameter of the token */
+	private static final int DEFAULT_TOKEN_DIAMETER_PERCENTAGE = 66;
+	
+	/** the diameter of the token, as a percentage of the cell size */
+	private int tokenDiameterPercentage;
 
 	/** the symbol used as the token's character label, and its colour */
 	private String symbol;
 	private Color symbolColour;
 	
+	/** the background colour of the token */
+	private Color bgColour;
+	
+	/** the border colour of the token */
+	private Color borderColour;
+	
 	/**
 	 * Make a new Generic Token Drawer.
 	 * @param symbol
 	 * @param symbolColour
+	 * @param bgColour
+	 * @param borderColour
 	 */
-	public GenericTokenPainter(String symbol, Color symbolColour) {
+	public GenericTokenPainter(String symbol, Color symbolColour, 
+							   Color bgColour, Color borderColour) {
+		this(symbol, DEFAULT_TOKEN_DIAMETER_PERCENTAGE, symbolColour, bgColour, borderColour);
+	}
+	
+	/**
+	 * Make a new Generic Token Drawer
+	 * 
+	 * @param symbol
+	 * @param diameterPct
+	 * @param symbolColour
+	 * @param bgColour
+	 * @param borderColour
+	 */
+	public GenericTokenPainter(String symbol, int diameterPct, 
+					   Color symbolColour, Color bgColour, Color borderColour) {
+		tokenDiameterPercentage = diameterPct;
 		this.symbol = symbol;
 		this.symbolColour = symbolColour;
+		this.borderColour = borderColour;
+		this.bgColour = bgColour;
 	}
+	
 	
 	/** 
 	 * Draw the token
@@ -70,7 +100,8 @@ public class GenericTokenPainter extends TokenPainter {
 	 */
 	@Override
 	public void draw(Graphics2D g) {
-		super.drawCircleToken(g, TOKEN_DIAMETER_PERCENTAGE, Color.WHITE, Color.RED);
+		super.drawCircleToken(
+				g, tokenDiameterPercentage, bgColour, borderColour);
 		drawCharacter(g);
 	}
 	
@@ -94,6 +125,6 @@ public class GenericTokenPainter extends TokenPainter {
 	 */
 	@Override
 	protected int getDiameter() {
-		return TOKEN_DIAMETER_PERCENTAGE * CELL_SIZE / 100;
+		return tokenDiameterPercentage * CELL_SIZE / 100;
 	}
 }
