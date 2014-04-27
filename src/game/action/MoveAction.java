@@ -1,5 +1,5 @@
 /**
- *  File name: ActionPainter.java
+ *  File name: MoveAction.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,56 +18,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ui.drawing;
+package game.action;
 
-import game.action.Action;
+import game.Player;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author littlewoo
  */
-public class ActionPainter {
-	
-	/** The actions currently stored in the painter */
-	Map<Action, Point> actionLocs;
-	
-	
-	public ActionPainter() {
-		actionLocs = new HashMap<Action, Point>();
-	}
+public class MoveAction extends BaseMoveAction {
 
-	/** 
+	/**
+	 * Make a new move action
 	 * 
-	 * @param g
+	 * @param p the player to move
+	 * @param loc the location to move to
 	 */
-	public void paintAll(Graphics2D g) {
-		g.setColor(new Color(0.0f, 0.5f, 0.0f, 0.4f));
-		for (Point p : actionLocs.values()) {
-			g.fillOval(p.x-20, p.y-20, 40, 40);
-		}
-	}
-
-	/** 
-	 * 
-	 * @param a
-	 * @param x
-	 * @param y
-	 */
-	public void addAction(Action a, Point p) {
-		actionLocs.put(a, p);
-	}
-
-	/** 
-	 * Clear all the actions from the painter.
-	 */
-	public void clearActions() {
-		actionLocs.clear();
+	public MoveAction(Player p, Point loc) {
+		super(p, loc, ActionType.MOVE);
 	}
 
 }

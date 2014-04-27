@@ -1,5 +1,5 @@
 /**
- *  File name: ActionView.java
+ *  File name: ListShuffler.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -20,20 +20,20 @@
  */
 package interfaces;
 
-import game.action.ActionCollection;
+import java.util.List;
 
 /**
- * Interface for an actionView: a view which provides some sort of display of 
- * available actions.
- *
+ * Interface for an object which can shuffle a list
+ * 
  * @author littlewoo
  */
-public interface ActionView {
+public interface ListShuffler {
 	
 	/**
-	 * Display a list of actions
+	 * Shuffle a list. The given list is not changed at all by the method.
 	 * 
-	 * @param actions the actions to be displayed
+	 * @param list the list to be shuffled
+	 * @return a shuffled <em>copy</em> of the original list
 	 */
-	public void displayActions(ActionCollection actions);
+	public <T> List<T> shuffle(final List<T> list);
 }

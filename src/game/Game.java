@@ -20,11 +20,17 @@
  */
 package game;
 
-import game.Action.ActionType;
 import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
+import game.action.Action;
+import game.action.ActionCollection;
+import game.action.MoveAction;
+import game.action.MoveIntoFireAction;
+import game.action.MoveWithVictimAction;
+import game.token.POIQuestionMarkToken;
 import game.token.POIToken;
 import game.token.PlayerToken;
+import game.token.VictimPOIToken;
 import interfaces.APListener;
 import interfaces.ActionPerformer;
 import interfaces.ActionView;
@@ -89,7 +95,8 @@ public class Game implements TurnTaker, ActionPerformer {
 		createPlayers(data);		
 		board = new Board(WIDTH, HEIGHT);
 		diceRoller = new DiceRoller();
-		pointsOfInterest = POIToken.getPOITokenStack(POI_COUNT, POI_RATIO);
+		pointsOfInterest = 
+				POIQuestionMarkToken.getPOITokenStack(POI_COUNT, POI_RATIO, diceRoller);
 		nextPOI = 0;
 	}
 	
@@ -161,7 +168,6 @@ public class Game implements TurnTaker, ActionPerformer {
 	 */
 	public void placeInitialPOITokens() {
 		for (int i=0; i<INITIAL_POI_COUNT; i++) {
-			System.out.println("Placing POI");
 			placePOITokenRandomly();
 		}
 	}
@@ -174,7 +180,6 @@ public class Game implements TurnTaker, ActionPerformer {
 			POIToken pt = pointsOfInterest.get(nextPOI);
 			int x = diceRoller.rollDie(8, false).roll;
 			int y = diceRoller.rollDie(6, false).roll;
-			System.out.println("\tat (" + x + "," + y + ")");
 			board.addPOIToken(new Point(x, y), pt, POI_REPLACES_FIRE);
 			nextPOI ++;
 		}
@@ -312,41 +317,58 @@ public class Game implements TurnTaker, ActionPerformer {
 	private ActionCollection getActions() {
 		List<Action> result = new ArrayList<Action>();
 		Player player = getCurrentPlayer();
-		Set<Point> possMoves = board.getPossibleMoves(player.getToken());
+		PlayerToken t = player.getToken();
+		Set<Point> possMoves = board.getPossibleMoves(t);
+		VictimPOIToken victim = board.getVictimAtPlayer(t);
 		for (Point p : possMoves) {
-			ActionType type;
 			if (board.isFireAt(p)) {
-				type = ActionType.MOVE_INTO_FIRE;
+				result.add(new MoveIntoFireAction(player, p));
 			} else {
-				type = ActionType.MOVE;
+				result.add(new MoveAction(player, p));
+				if (victim != null) {
+					result.add(new MoveWithVictimAction(player, p, victim));
+				}
 			}
-			result.add(new Action(player, p.x, p.y, type));
 		}
 		return new ActionCollection(result);
+	}
+	
+	/**
+	 * Move a player to a new location
+	 * 
+	 * @param loc the new location
+	 * @param p the player to move
+	 */
+	@Override
+	public boolean movePlayer(Player p, Point loc) {
+		board.movePlayerToken(loc.x, loc.y, p);
+		POIToken t = board.getPOITokenAt(loc);
+		if (t instanceof POIQuestionMarkToken) {
+			board.flipPOIToken((POIQuestionMarkToken) t);
+		}
+		return true;
+	}
+	
+	/**
+	 * Move a victim to a new location
+	 * 
+	 * @param victim the VictimPOIToken to move
+	 * @param loc the location to move to
+	 * @return true if the move was successful (i.e. fire and other victims 
+	 * 				allowed it
+	 */
+	@Override
+	public boolean moveVictimToken(VictimPOIToken victim, Point loc) {
+		return board.movePOIToken(victim, loc);
 	}
 
 	/* (non-Javadoc)
 	 * @see interfaces.ActionPerformer#performAction(game.Action)
 	 */
 	@Override
-	public void performAction(Action action) {
-		int x = action.getX();
-		int y = action.getY();
-		Player p = action.getPlayer();
-		if (p.performAction(action.getApCost())) {
-			switch (action.getType()) {
-				case MOVE:
-				case MOVE_INTO_SMOKE:
-				case MOVE_INTO_FIRE:
-					board.movePlayerToken(x, y, p);
-					break;
-				default:
-					throw new IllegalArgumentException(
-							"Action type not recognised.");
-						
-			}
-			alertActionViews();	
-		} else {
-		}
+	public boolean performAction(Action action) {
+		boolean val = action.performAction(this);
+		alertActionViews();
+		return val;
 	}
 }

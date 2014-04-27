@@ -20,7 +20,7 @@
  */
 package interfaces;
 
-import game.Action;
+import game.action.Action;
 
 import java.awt.Point;
 import java.util.List;

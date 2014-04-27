@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game;
+package game.action;
 
 import interfaces.ActionStore;
 
@@ -42,7 +42,7 @@ public class ActionCollection implements ActionStore {
 		actionLocs = new HashMap<Point, List<Action>>();
 		this.actions = actions;
 		for (Action a : actions) {
-			Point p = new Point(a.getX(), a.getY());
+			Point p = a.getLoc();
 			if (actionLocs.get(p) == null) {
 				actionLocs.put(p, new ArrayList<Action>());
 			}

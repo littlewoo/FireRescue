@@ -20,7 +20,11 @@
  */
 package interfaces;
 
-import game.Action;
+import game.Player;
+import game.action.Action;
+import game.token.VictimPOIToken;
+
+import java.awt.Point;
 
 /**
  * Provides actions for square selections, and performs a selected action.
@@ -32,10 +36,28 @@ public interface ActionPerformer {
 	/**
 	 * Perform an action
 	 *
-	 * @param x the x coordinate targetted by the action
-	 * @param y the y coordinate targetted by the action
+	 * @param x the x coordinate targeted by the action
+	 * @param y the y coordinate targeted by the action
 	 * @param the action to perform
+	 * @return true if the action was successfully performed
 	 */
-	public void performAction(Action action);
+	public boolean performAction(Action action);
 	
+	/**
+	 * Move a player
+	 * 
+	 * @param p the player to move
+	 * @param loc the location to move to
+	 * @return true if the action was successfully performed
+	 */
+	public boolean movePlayer(Player p, Point loc);
+	
+	/**
+	 * Move a victim token
+	 * 
+	 * @param victim the token to move
+	 * @param loc the location to move to
+	 * @return true if the action was successfully performed
+	 */
+	public boolean moveVictimToken(VictimPOIToken victim, Point loc);
 }

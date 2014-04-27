@@ -27,12 +27,12 @@ import ui.drawing.TokenPainter;
  *
  * @author littlewoo
  */
-public class BlankPOIToken extends POIReverseToken {
+public class BlankPOIToken extends POIFaceToken {
 	
 	/** 
 	 * @param reverse the token on the reverse of this one
 	 */
-	public BlankPOIToken(POIToken reverse) {
+	public BlankPOIToken(POIQuestionMarkToken reverse) {
 		super(reverse);
 	}
 

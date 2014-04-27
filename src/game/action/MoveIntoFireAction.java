@@ -1,5 +1,5 @@
 /**
- *  File name: IPOIToken.java
+ *  File name: MoveIntoFireAction.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,31 +18,27 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.token;
+package game.action;
+
+import game.Player;
+
+import java.awt.Point;
 
 /**
+ * Action for moving a player piece into a fire.
  *
  * @author littlewoo
  */
-public abstract class POIReverseToken implements FlippableToken {
-	/** the POIToken representing the reverse of this token */
-	private POIToken reverse;
+public class MoveIntoFireAction extends BaseMoveAction {
 
-	/**
-	 * Create a new BlankPOIToken.
+	/** 
 	 * 
-	 * @param reverse the POI token on the reverse of the blank.
+	 * @param p the player 
+	 * @param loc the location to move into (it is assumed this location 
+	 * 		      contains fire)
 	 */
-	public POIReverseToken(POIToken reverse) {
-		this.reverse = reverse;
-	}
-
-	/* (non-Javadoc)
-	 * @see game.token.FlippableToken#flip()
-	 */
-	@Override
-	public Token flip() {
-		return reverse;
+	public MoveIntoFireAction(Player p, Point loc) {
+		super(p, loc, ActionType.MOVE_INTO_FIRE);
 	}
 
 }

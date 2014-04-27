@@ -21,6 +21,7 @@
 package game;
 
 import interfaces.DiceRollListener;
+import interfaces.ListShuffler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,13 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Class for rolling dice.
+ * Class for performing tasks adding randomness to the game. Principally rolling
+ * dice, but also shuffling lists.
  *
  * @author littlewoo
  *
  */
-public class DiceRoller {
+public class DiceRoller implements ListShuffler {
 	
 	/** random number generator used in rolling dice */
 	private Random rand;
@@ -124,6 +126,24 @@ public class DiceRoller {
 		for (DiceRollListener l : listeners) {
 			l.diceRoll(d);
 		}
+	}
+	
+	/**
+	 * Shuffle a list
+	 * 
+	 * @param list the list to be shuffled
+	 * @return a copy of the list, in a shuffled order
+	 */
+	public <T> List<T> shuffle(final List<T> list) {
+		List<T> result = new ArrayList<T>();
+		for (T t : list) {
+			int position = 0;
+			if (result.size() > 0) {
+				position = rand.nextInt(result.size());
+			}
+			result.add(position, t);
+		}		
+		return result;		
 	}
 	
 	/**

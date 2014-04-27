@@ -18,26 +18,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game;
+package game.action;
+
+import game.Player;
+import interfaces.ActionPerformer;
+
+import java.awt.Point;
 
 /**
  * Represents a possible action to be taken by a player.
  *
  * @author littlewoo
  */
-public class Action {
+public abstract class Action {
 	
 	/** Costs of actions */
 	private final static int MOVE_COST = 1;
 	private final static int MOVE_INTO_FIRE_COST = 2;
 	private final static int MOVE_INTO_SMOKE_COST = 1;
+	private final static int MOVE_WITH_VICTIM_COST = 2;
+	private final static int MOVE_WITH_VICTIM_INTO_FIRE_COST = 100;
 	
 	/** The player the action applies to */
 	private final Player player;
 	
 	/** the location the action applies to */
-	private final int x;
-	private final int y;
+	private final Point loc;
 	
 	/** the type of the action */
 	private final ActionType type;
@@ -49,18 +55,24 @@ public class Action {
 	 * Initialize an action
 	 * 
 	 * @param p the player taking the action
-	 * @param x the x location of the action
-	 * @param y the y location of the action
+	 * @param loc the location targeted by the action
 	 * @param type the type of the action
 	 * @param cost the cost of the action
 	 */
-	public Action(Player p, int x, int y, ActionType type) {
+	public Action(Player p, Point loc, ActionType type) {
 		player = p;
-		this.x = x;
-		this.y = y;
+		this.loc = loc;
 		this.type = type;
 		apCost = type.getCost();
 	}
+	
+	/**
+	 * Perform the action
+	 * 
+	 * @param performer the ActionPerformer which will carry out the action
+	 * @return true if the action was performed successfully
+	 */
+	public abstract boolean performAction(ActionPerformer performer);
 	
 	/**
 	 * @return the player
@@ -70,17 +82,10 @@ public class Action {
 	}
 
 	/**
-	 * @return the x
+	 * @return the location of the action
 	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * @return the y
-	 */
-	public int getY() {
-		return y;
+	public Point getLoc() {
+		return loc;
 	}
 
 	/**
@@ -99,7 +104,7 @@ public class Action {
 
 	@Override
 	public String toString() {
-		return "[Action: Player=" + player + ", x=" + x + ", y=" + y +
+		return "[Action: Player=" + player + ", x=" + loc.x + ", y=" + loc.y +
 				", type=" + type;
 	}
 
@@ -111,7 +116,10 @@ public class Action {
 	public enum ActionType {		
 		MOVE("Move", MOVE_COST),
 		MOVE_INTO_SMOKE("Move into smoke", MOVE_INTO_SMOKE_COST),
-		MOVE_INTO_FIRE("Move into fire", MOVE_INTO_FIRE_COST);
+		MOVE_INTO_FIRE("Move into fire", MOVE_INTO_FIRE_COST),
+		MOVE_WITH_VICTIM("Carry victim", MOVE_WITH_VICTIM_COST),
+		MOVE_WITH_VICTIM_INTO_FIRE(
+				"Carry victim into fire", MOVE_WITH_VICTIM_INTO_FIRE_COST);
 		
 		private int cost;
 		private String name;

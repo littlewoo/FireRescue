@@ -61,12 +61,19 @@ public class Player {
 	 * @return true if the action was successful
 	 */
 	public boolean performAction(int cost) {
-		if (cost > ap) {
+		if (! canPerformAction(cost)) {
 			return false;
 		}
 		ap -= cost;
 		alertAPListeners();
 		return true;
+	}
+	
+	/**
+	 * @return true if the player is capable of the action 
+	 */
+	public boolean canPerformAction(int cost) {
+		return cost <= ap;
 	}
 	
 	/**

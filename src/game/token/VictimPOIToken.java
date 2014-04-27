@@ -27,14 +27,14 @@ import ui.drawing.TokenPainter;
  *
  * @author littlewoo
  */
-public class VictimPOIToken extends POIReverseToken {
+public class VictimPOIToken extends POIFaceToken {
 	
 	/** 
 	 * Create a new VictimPOIToken
 	 * 
-	 * @param reverse the POIToken on the reverse of this one
+	 * @param reverse the POIQuestionMarkToken on the reverse of this one
 	 */
-	public VictimPOIToken(POIToken reverse) {
+	public VictimPOIToken(POIQuestionMarkToken reverse) {
 		super(reverse);
 	}
 

@@ -1,5 +1,5 @@
 /**
- *  File name: ActionView.java
+ *  File name: IPOIToken.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,22 +18,31 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package interfaces;
-
-import game.action.ActionCollection;
+package game.token;
 
 /**
- * Interface for an actionView: a view which provides some sort of display of 
- * available actions.
  *
  * @author littlewoo
  */
-public interface ActionView {
-	
+public abstract class POIFaceToken implements POIToken {
+	/** the POIQuestionMarkToken representing the reverse of this token */
+	private POIQuestionMarkToken reverse;
+
 	/**
-	 * Display a list of actions
+	 * Create a new BlankPOIToken.
 	 * 
-	 * @param actions the actions to be displayed
+	 * @param reverse the POI token on the reverse of the blank.
 	 */
-	public void displayActions(ActionCollection actions);
+	public POIFaceToken(POIQuestionMarkToken reverse) {
+		this.reverse = reverse;
+	}
+
+	/* (non-Javadoc)
+	 * @see game.token.FlippableToken#flip()
+	 */
+	@Override
+	public Token flip() {
+		return reverse;
+	}
+
 }

@@ -1,5 +1,5 @@
 /**
- *  File name: ActionPainter.java
+ *  File name: BaseMoveAction.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -18,56 +18,39 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FireRescue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ui.drawing;
+package game.action;
 
-import game.action.Action;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.util.HashMap;
-import java.util.Map;
+
+import game.Player;
+import interfaces.ActionPerformer;
 
 /**
+ * Parent for any actions which involve moving the player
  *
  * @author littlewoo
  */
-public class ActionPainter {
-	
-	/** The actions currently stored in the painter */
-	Map<Action, Point> actionLocs;
-	
-	
-	public ActionPainter() {
-		actionLocs = new HashMap<Action, Point>();
-	}
+public abstract class BaseMoveAction extends Action {
 
 	/** 
 	 * 
-	 * @param g
+	 * @param p the player moving
+	 * @param loc
+	 * @param type
 	 */
-	public void paintAll(Graphics2D g) {
-		g.setColor(new Color(0.0f, 0.5f, 0.0f, 0.4f));
-		for (Point p : actionLocs.values()) {
-			g.fillOval(p.x-20, p.y-20, 40, 40);
+	public BaseMoveAction(Player p, Point loc, ActionType type) {
+		super(p, loc, type);
+	}
+	
+	/* (non-Javadoc)
+	 * @see game.action.Action#performAction(interfaces.ActionPerformer)
+	 */
+	@Override
+	public boolean performAction(ActionPerformer performer) {
+		boolean val = getPlayer().performAction(getApCost());
+		if (val) {
+			performer.movePlayer(getPlayer(), getLoc());
 		}
+		return val;
 	}
-
-	/** 
-	 * 
-	 * @param a
-	 * @param x
-	 * @param y
-	 */
-	public void addAction(Action a, Point p) {
-		actionLocs.put(a, p);
-	}
-
-	/** 
-	 * Clear all the actions from the painter.
-	 */
-	public void clearActions() {
-		actionLocs.clear();
-	}
-
 }

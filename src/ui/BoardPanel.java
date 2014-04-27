@@ -20,12 +20,12 @@
  */
 package ui;
 
-import game.Action;
-import game.Action.ActionType;
-import game.ActionCollection;
 import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
 import game.Game;
+import game.action.Action;
+import game.action.ActionCollection;
+import game.action.Action.ActionType;
 import game.token.MovableToken;
 import interfaces.ActionPerformer;
 import interfaces.ActionView;
@@ -262,7 +262,17 @@ public class BoardPanel extends JPanel
 		int yLoc = TOP_MARGIN + CELL_SIZE * y + CELL_SIZE / 2;
 		return new Point(xLoc, yLoc);
 	}
-	
+
+	/**
+	 * Convert a cell reference <code>p</code> into a pixel coordinate for the 
+	 * center of the cell.
+	 * 
+	 * @param loc the cell reference
+	 * @return the centre location of a cell
+	 */
+	private Point getCellLoc(Point loc) {
+		return getCellLoc(loc.x, loc.y);
+	}	
 
 	/* (non-Javadoc)
 	 * @see interfaces.ActionView#displayActions(java.util.List)
@@ -272,7 +282,7 @@ public class BoardPanel extends JPanel
 		actionPainter.clearActions();
 		this.actions = actions;
 		for (Action a : actions.getActions()) {
-			Point p = getCellLoc(a.getX(), a.getY());
+			Point p = getCellLoc(a.getLoc());
 			actionPainter.addAction(a, p);
 		}
 		repaint();

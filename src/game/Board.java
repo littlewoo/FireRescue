@@ -22,11 +22,14 @@ package game;
 
 import game.Walls.Direction;
 import game.token.FireToken;
+import game.token.POIFaceToken;
+import game.token.POIQuestionMarkToken;
 import game.token.POIToken;
 import game.token.PlayerToken;
 import game.token.SmokeToken;
 import game.token.ThreatToken;
 import game.token.Token;
+import game.token.VictimPOIToken;
 import game.token.WallToken;
 
 import java.awt.Point;
@@ -215,7 +218,6 @@ public class Board {
 	 * @param t the token to be removed
 	 */
 	public void removeToken(Token t) {
-		System.out.println("Removing token: " + t);
 		Point p = tokenLocs.remove(t);
 		boolean success = (p != null);
 		if (success) {
@@ -244,7 +246,6 @@ public class Board {
 	 * @param t the token to be removed
 	 */
 	private void removeThreatToken(ThreatToken t) {
-		System.out.println("Removing threat token: " + t);
 		Point p = tokenLocs.get(t);
 		removeThreatToken(p.x, p.y);
 	}
@@ -257,8 +258,18 @@ public class Board {
 	 */
 	private void removeThreatToken(int x, int y) {
 		Point p = new Point(x, y);
-		System.out.println("Removing threat token by location: " + p);
 		ThreatToken t = fireLayer.removeToken(p);
+		removeToken(t);
+	}
+	
+	/** 
+	 * Remove a POI token from the board.
+	 * 
+	 * @param t the token to remove
+	 */
+	private void removePOIToken(POIToken t) {
+		Point p = tokenLocs.get(t);
+		poiLayer.removeToken(p);
 		removeToken(t);
 	}
 
@@ -380,7 +391,6 @@ public class Board {
 	 * Remove any fire tokens from around the outside edge of the board.
 	 */
 	public void removeFireFromEdges() {
-		System.out.println("Removing fire from edges: ");
 		for (int x = 0; x < getWidth(); x++) {
 			removeThreatToken(x, 0);
 			removeThreatToken(x, getHeight()-1);
@@ -389,7 +399,6 @@ public class Board {
 			removeThreatToken(0, y);
 			removeThreatToken(getWidth()-1, y);
 		}
-		System.out.println("Done removing fire from edges.");
 	}
 
 	/** 
@@ -565,5 +574,60 @@ public class Board {
 	 */
 	public enum TokenChangeType {
 		ADD, REMOVE, MOVE;
+	}
+
+	/** 
+	 * Get the POI token at the given location
+	 * 
+	 * @param loc the location to check
+	 * @return the POI token at the location, if there is one
+	 */
+	public POIToken getPOITokenAt(Point loc) {
+		return poiLayer.getTokenAt(loc);
+	}
+	
+	/**
+	 * @param t the player to check if a victim is there
+	 * @return true if there is a victim on a square
+	 */
+	public VictimPOIToken getVictimAtPlayer(PlayerToken t) {
+		Point p = tokenLocs.get(t);
+		POIToken pt = getPOITokenAt(p);
+		if (pt instanceof VictimPOIToken) {
+			return (VictimPOIToken) pt;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Flip a flippable token
+	 * 
+	 * @param token the token to flip
+	 */
+	public void flipPOIToken(POIQuestionMarkToken t) {
+		Point p = tokenLocs.get(t);
+		if (p != null) {
+			POIFaceToken flipped = t.flip();
+			removePOIToken(t);
+			addPOIToken(p, flipped, true);
+		}
+	}
+
+	/**
+	 * Move a POI token to a new location
+	 * 
+	 * @param t the POI token to be moved
+	 * @param loc the new location to move to
+	 * @return true if the move was successful
+	 */
+	public boolean movePOIToken(POIToken t, Point loc) {
+		POIToken other = poiLayer.getTokenAt(loc);
+		if (other != null || isFireAt(loc)) {
+			return false;
+		} 
+		removePOIToken(t);
+		addPOIToken(loc, t, false);
+		return true;
 	}
 }

@@ -111,9 +111,9 @@ public class GenericTokenPainter extends TokenPainter {
 	 * @param g the graphics to draw on
 	 */
 	protected void drawCharacter(Graphics2D g) {
-		if (symbol.length() != 1) {
+		if (symbol.length() > 1) {
 			throw new IllegalArgumentException(
-								"Token character length must be exactly 1.");
+								"Token character length must be <= 1.");
 		}
 		g.setColor(symbolColour);
 		g.setFont(TOKEN_CHAR_FONT);
