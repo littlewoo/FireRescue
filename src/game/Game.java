@@ -27,6 +27,8 @@ import game.action.ActionCollection;
 import game.action.MoveAction;
 import game.action.MoveIntoFireAction;
 import game.action.MoveWithVictimAction;
+import game.token.BlankPOIToken;
+import game.token.POIFaceToken;
 import game.token.POIQuestionMarkToken;
 import game.token.POIToken;
 import game.token.PlayerToken;
@@ -35,6 +37,7 @@ import interfaces.APListener;
 import interfaces.ActionPerformer;
 import interfaces.ActionView;
 import interfaces.DiceRollListener;
+import interfaces.POIEventListener;
 import interfaces.TurnPhaseListener;
 import interfaces.TurnPhaseListener.TurnPhase;
 import interfaces.TurnTaker;
@@ -98,6 +101,14 @@ public class Game implements TurnTaker, ActionPerformer {
 		pointsOfInterest = 
 				POIQuestionMarkToken.getPOITokenStack(POI_COUNT, POI_RATIO, diceRoller);
 		nextPOI = 0;
+		board.addPOIEventListener(new POIEventListener() {
+			@Override
+			public void onPOIEvent(POIEvent e) {
+				if (e.type == POIEvent.POIEventType.RESCUED) {
+					placePOITokenRandomly();
+				}
+			}
+		});
 	}
 	
 	/**
@@ -302,6 +313,15 @@ public class Game implements TurnTaker, ActionPerformer {
 			v.displayActions(actions);
 		}
 	}
+	
+	/**
+	 * Add a POIEventListener
+	 * 
+	 * @param listener
+	 */
+	public void addPOIEventListener(POIEventListener listener) {
+		board.addPOIEventListener(listener);
+	}
 
 	/** 
 	 * Place the walls on the board
@@ -344,7 +364,10 @@ public class Game implements TurnTaker, ActionPerformer {
 		board.movePlayerToken(loc.x, loc.y, p);
 		POIToken t = board.getPOITokenAt(loc);
 		if (t instanceof POIQuestionMarkToken) {
-			board.flipPOIToken((POIQuestionMarkToken) t);
+			POIFaceToken ft = board.flipPOIToken((POIQuestionMarkToken) t);
+			if (ft instanceof BlankPOIToken) {
+				placePOITokenRandomly();
+			}
 		}
 		return true;
 	}

@@ -31,6 +31,8 @@ import game.token.ThreatToken;
 import game.token.Token;
 import game.token.VictimPOIToken;
 import game.token.WallToken;
+import interfaces.POIEventListener;
+import interfaces.POIEventListener.POIEvent;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -46,6 +48,9 @@ import java.util.Set;
  * @author littlewoo
  */
 public class Board {
+	/** The locations around the edge of the board */
+	private Set<Point> edges;
+	
 	/** The locations of all the tokens in the game */
 	private Map<Token, Point> tokenLocs;
 	/** The fire tokens. */
@@ -60,6 +65,9 @@ public class Board {
 
 	/** Listeners for changes to the tokens in the game. */
 	private List<TokenChangeListener> tokenChangeListeners;
+	/** listeners for POI token events */
+	private List<POIEventListener> poiEventListeners;
+	
 
 	/**
 	 * Construct a new Board.
@@ -71,6 +79,7 @@ public class Board {
 		poiLayer = new TokenLayer<POIToken>(width, height);
 
 		tokenChangeListeners = new ArrayList<TokenChangeListener>();
+		edges = getEdges();
 	}
 
 	/** 
@@ -363,6 +372,22 @@ public class Board {
 		} 
 		return inBounds;
 	}
+	
+	/**
+	 * @return a set of coordinates around the edge of the board
+	 */
+	private Set<Point> getEdges() {
+		Set<Point> edges = new HashSet<Point>();
+		for (int x=0; x<getWidth(); x++) {
+			edges.add(new Point(x, 0));
+			edges.add(new Point(x, getHeight()-1));
+		}
+		for (int y=0; y<getWidth(); y++) {
+			edges.add(new Point(0, y));
+			edges.add(new Point(getWidth()-1, y));
+		}
+		return edges;
+	}
 
 	/**
 	 * Carry out the advance fire phase of the game, centred on a given square.
@@ -391,13 +416,8 @@ public class Board {
 	 * Remove any fire tokens from around the outside edge of the board.
 	 */
 	public void removeFireFromEdges() {
-		for (int x = 0; x < getWidth(); x++) {
-			removeThreatToken(x, 0);
-			removeThreatToken(x, getHeight()-1);
-		}
-		for (int y = 0; y < getHeight(); y++) {
-			removeThreatToken(0, y);
-			removeThreatToken(getWidth()-1, y);
+		for (Point p : edges) {
+			removeThreatToken(p.x, p.y);
 		}
 	}
 
@@ -604,14 +624,17 @@ public class Board {
 	 * Flip a flippable token
 	 * 
 	 * @param token the token to flip
+	 * @return the flipped token
 	 */
-	public void flipPOIToken(POIQuestionMarkToken t) {
+	public POIFaceToken flipPOIToken(POIQuestionMarkToken t) {
 		Point p = tokenLocs.get(t);
 		if (p != null) {
 			POIFaceToken flipped = t.flip();
 			removePOIToken(t);
 			addPOIToken(p, flipped, true);
+			return flipped;
 		}
+		return null;
 	}
 
 	/**
@@ -628,6 +651,58 @@ public class Board {
 		} 
 		removePOIToken(t);
 		addPOIToken(loc, t, false);
+		if (t instanceof VictimPOIToken) {
+			checkRescuedVictim((VictimPOIToken) t);
+		}
 		return true;
+	}
+	
+	/**
+	 * Check whether a victim has been rescued, and alert listeners if they
+	 * have.
+	 * 
+	 * @param v the victim token to check
+	 */
+	private void checkRescuedVictim(VictimPOIToken v) {
+		Point p = tokenLocs.get(v);
+		if (edges.contains(p)) {
+			rescueVictim(v);
+		}
+	}
+	
+	/**
+	 * Register a victim token as rescued
+	 * 
+	 * @param t the victim token to rescue
+	 */
+	private void rescueVictim(VictimPOIToken t) {
+		removePOIToken(t);
+		alertPOIEventListeners(new POIEvent(t, POIEvent.POIEventType.RESCUED));
+	}
+	
+	
+	/**
+	 * Add a POIEventListener
+	 * 
+	 * @param listener
+	 */
+	public void addPOIEventListener(POIEventListener listener) {
+		if (poiEventListeners == null) {
+			poiEventListeners = new ArrayList<POIEventListener>();
+		}
+		poiEventListeners.add(listener);
+	}
+	
+	/**
+	 * Alert POI event listeners of a new POI event
+	 * 
+	 * @param e the event
+	 */
+	private void alertPOIEventListeners(POIEvent e) {
+		if (poiEventListeners != null) {
+			for (POIEventListener l : poiEventListeners) {
+				l.onPOIEvent(e);
+			}
+		}
 	}
 }

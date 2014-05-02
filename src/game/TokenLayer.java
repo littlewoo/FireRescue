@@ -24,7 +24,9 @@ import game.token.Token;
 
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A storage class for storing tokens.
@@ -73,6 +75,19 @@ public class TokenLayer<T extends Token> {
 	public T getTokenAt(Point p) {
 		throwExceptionIfOutOfBounds(p);
 		return tokens.get(p);
+	}
+	
+	/**
+	 * Get a set containing all the tokens in the layer
+	 * 
+	 * @return a set containing all of the tokens in the layer
+	 */
+	public Set<T> getAllTokens() {
+		Set<T> result = new HashSet<T>();
+		for (T t : tokens.values()) {
+			result.add(t);
+		}
+		return result;
 	}
 	
 	/**

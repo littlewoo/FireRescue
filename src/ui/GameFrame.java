@@ -21,14 +21,15 @@
 package ui;
 
 import game.Game;
+import interfaces.POIEventListener;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JMenu;
-import java.awt.event.KeyEvent;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 /**
@@ -63,6 +64,27 @@ public class GameFrame extends JFrame {
 		APView apv = controlPanel.getAPView();
 		APHandler aph = new APHandler(apv);
 		game.addAPListener(aph);
+		
+		game.addPOIEventListener(new POIEventListener() {
+			private int rescued = 0;
+			private int killed = 0;
+			
+			@Override
+			public void onPOIEvent(POIEvent e) {
+				switch (e.type) {
+					case RESCUED:
+						rescued ++;
+						System.out.println("Rescued: " + rescued);
+						break;
+					case KILLED:
+						killed ++;
+						System.out.println("Killed: " + killed);
+						break;
+					default:
+						break;
+				}
+			}
+		});
 
 		boardPanel = new BoardPanel(game);
 		boardPanel.setPreferredSize(new Dimension(1000, 850));

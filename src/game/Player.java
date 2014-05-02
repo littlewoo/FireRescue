@@ -39,7 +39,7 @@ public class Player {
 	private int ap;
 	
 	/** the number of AP the player gets at the beginning of each turn */
-	private static final int AP_EACH_TURN = 4;
+	private static final int AP_EACH_TURN = 99;
 	
 	/** the listeners for changes in AP */
 	private List<APListener> apListeners;
