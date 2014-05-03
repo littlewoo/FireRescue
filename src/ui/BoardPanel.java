@@ -24,14 +24,13 @@ import game.Board.TokenChangeEvent;
 import game.Board.TokenChangeListener;
 import game.Game;
 import game.action.Action;
-import game.action.ActionCollection;
 import game.action.Action.ActionType;
+import game.action.ActionCollection;
 import game.token.MovableToken;
 import interfaces.ActionPerformer;
 import interfaces.ActionView;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -42,18 +41,16 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import ui.drawing.ActionPainter;
-import ui.drawing.TokenPaintingManager;
 
 /**
  * The panel showing the board.
  * 
  * @author littlewoo
  */
-public class BoardPanel extends JPanel 
+public class BoardPanel extends TokenGridPanel 
 						implements TokenChangeListener, ActionView {
 	
 	private static final long serialVersionUID = 6945410881583290262L;
@@ -66,17 +63,6 @@ public class BoardPanel extends JPanel
 	public final static int CELL_SIZE = 95;
 	/** the size of the margins around the board */
 	private final static int MARGIN_SIZE = 25;
-	/** the x value for the left margin */
-	private final static int LEFT_MARGIN = MARGIN_SIZE;
-	/** the x value for the right margin */
-	private final static int RIGHT_MARGIN = MARGIN_SIZE + CELL_SIZE * WIDTH;
-	/** the y value for the top margin */
-	private final static int TOP_MARGIN = MARGIN_SIZE;
-	/** the y value for the bottom margin */
-	private final static int BOTTOM_MARGIN = MARGIN_SIZE + CELL_SIZE * HEIGHT;
-	
-	/** the manager responsible for drawing tokens */
-	private final TokenPaintingManager tokenPaintingManager;
 	
 	/** the painter which paints possible actions onto the panel */
 	private final ActionPainter actionPainter;
@@ -93,16 +79,16 @@ public class BoardPanel extends JPanel
 	 * @param game the game represented by this board
 	 */
 	public BoardPanel(Game game) {
+		super(CELL_SIZE, MARGIN_SIZE, WIDTH, HEIGHT);
+		setOpaque(true);
 		setBorder(null);
-		tokenPaintingManager = new TokenPaintingManager();
 		actionPainter = new ActionPainter();
 		actionPerformer = game;
 		
-		setPreferredSize(
-				new Dimension(MARGIN_SIZE + WIDTH * CELL_SIZE + MARGIN_SIZE, 
-							  MARGIN_SIZE + HEIGHT * CELL_SIZE + MARGIN_SIZE));
 		setBackground(new Color(160, 82, 45));
-		
+		setForeground(Color.WHITE);
+		setOpaque(true);
+				
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -124,34 +110,8 @@ public class BoardPanel extends JPanel
 	public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         super.paintComponent(g2);
-        drawLines(g2);
-        tokenPaintingManager.drawAll(g2);
         actionPainter.paintAll(g2);
     }
-	
-	/**
-	 * Draw the lines of the grid of the gameboard.
-	 * @param g
-	 */
-	private void drawLines(Graphics2D g) {
-		g.setColor(Color.WHITE);
-		
-		for (int i=0; i<WIDTH; i++) {
-			int x = LEFT_MARGIN + i * CELL_SIZE;
-			int y1 = TOP_MARGIN;
-			int y2 = BOTTOM_MARGIN;
-			g.drawLine(x, y1, x, y2);
-		}
-		for (int j=0; j<HEIGHT; j++) {
-			int y = TOP_MARGIN + j * CELL_SIZE;
-			int x1 = LEFT_MARGIN;
-			int x2 = RIGHT_MARGIN;
-			g.drawLine(x1, y, x2, y);
-		}
-		
-		g.drawLine(RIGHT_MARGIN, TOP_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN);
-		g.drawLine(LEFT_MARGIN, BOTTOM_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN);
-	}
 	
 	/**
 	 * Respond to an ordinary mouse click, by calculating the square in which 
@@ -163,12 +123,12 @@ public class BoardPanel extends JPanel
 	 */
 	private void respondToMouseClick(int x, int y, int button) {
 		actionPainter.clearActions();
-		if (x < LEFT_MARGIN || x > RIGHT_MARGIN || 
-			y < TOP_MARGIN || y > BOTTOM_MARGIN) {
+		if (x < leftMargin || x > rightMargin || 
+			y < topMargin || y > bottomMargin) {
 			System.out.println("Click outside boundaries: " + x + ", " + y);
 		} else {
-			x = x - LEFT_MARGIN;
-			y = y - TOP_MARGIN;
+			x = x - leftMargin;
+			y = y - topMargin;
 			int xSquare = x / CELL_SIZE;
 			int ySquare = y / CELL_SIZE;
 			Point p = new Point(xSquare, ySquare);
@@ -230,49 +190,22 @@ public class BoardPanel extends JPanel
 	 * @param e the token change event
 	 */
 	@Override
-	public void onTokenChange(TokenChangeEvent e) {
-		Point p = getCellLoc(e.getX(), e.getY());
-		
+	public void onTokenChange(TokenChangeEvent e) {		
+		Point p = new Point(e.getX(), e.getY());
 		switch (e.getChange()) {
 			case ADD:
-				tokenPaintingManager.addToken(e.getToken(), p.x, p.y);
+				super.addToken(e.getToken(), p);
 				break;
 			case REMOVE:
-				tokenPaintingManager.removeToken(e.getToken());
+				super.removeToken(e.getToken());
 				break;
 			case MOVE:
-				tokenPaintingManager.updateTokenLocation(
-						(MovableToken) e.getToken(), p.x, p.y);
+				super.moveToken((MovableToken) e.getToken(), p);
 				break;
 		}
 		
 		repaint();
 	}
-	
-	/**
-	 * Convert a cell reference (x,y) into a pixel coordinate for the center of
-	 * the cell
-	 * 
-	 * @param x the x coordinate of the cell
-	 * @param y the y coordinate of the cell
-	 * @return the centre location of a cell
-	 */
-	private Point getCellLoc(int x, int y) {
-		int xLoc = LEFT_MARGIN + CELL_SIZE * x + CELL_SIZE / 2;
-		int yLoc = TOP_MARGIN + CELL_SIZE * y + CELL_SIZE / 2;
-		return new Point(xLoc, yLoc);
-	}
-
-	/**
-	 * Convert a cell reference <code>p</code> into a pixel coordinate for the 
-	 * center of the cell.
-	 * 
-	 * @param loc the cell reference
-	 * @return the centre location of a cell
-	 */
-	private Point getCellLoc(Point loc) {
-		return getCellLoc(loc.x, loc.y);
-	}	
 
 	/* (non-Javadoc)
 	 * @see interfaces.ActionView#displayActions(java.util.List)

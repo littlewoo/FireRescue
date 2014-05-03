@@ -55,7 +55,7 @@ public class PlayerInfoDialog extends JDialog {
 	
 	/** the panel for the player details */
 	private JPanel playersPanel;
-	/** the individeal panels for each player */
+	/** the individual panels for each player */
 	private List<PlayerPanel> playerPanels;
 	/** listeners for when the ok button is clicked */
 	private List<OkListener> okListeners;
@@ -135,7 +135,7 @@ public class PlayerInfoDialog extends JDialog {
 				}
 			}
 		});
-		playerCount.setSelectedIndex(0);
+		playerCount.setSelectedItem(-1);
 		infoPanel.add(playerCount);
 		
 		pack();

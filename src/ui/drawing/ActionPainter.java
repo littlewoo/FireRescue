@@ -29,13 +29,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class for painting action markers. When an action is possible, a coloured 
+ * circle is placed on the square relating to the action, to signify to the user
+ * that an action is available on that square. This class draws the marker.
  *
  * @author littlewoo
  */
 public class ActionPainter {
 	
+	/** the colour of the marker */
+	private static final Color markerColour = new Color(0.0f, 0.5f, 0.0f, 0.5f);
+	
 	/** The actions currently stored in the painter */
-	Map<Action, Point> actionLocs;
+	private Map<Action, Point> actionLocs;
 	
 	
 	public ActionPainter() {
@@ -47,9 +53,10 @@ public class ActionPainter {
 	 * @param g
 	 */
 	public void paintAll(Graphics2D g) {
-		g.setColor(new Color(0.0f, 0.5f, 0.0f, 0.4f));
+		g.setColor(markerColour);
 		for (Point p : actionLocs.values()) {
 			g.fillOval(p.x-20, p.y-20, 40, 40);
+			System.out.println("Drawing action at " + p);
 		}
 	}
 

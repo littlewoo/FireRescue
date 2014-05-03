@@ -24,6 +24,7 @@ import game.Game;
 import interfaces.POIEventListener;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
@@ -51,9 +52,9 @@ public class GameFrame extends JFrame {
 	 * @param game the game represented by this frame
 	 */
 	public GameFrame(Game game) {
-		
+		Container con = getContentPane();
 		controlPanel = new ControlPanel(game);
-		getContentPane().add(controlPanel, BorderLayout.SOUTH);
+		con.add(controlPanel, BorderLayout.SOUTH);
 		
 		TurnPhaseView tpv = controlPanel.getTurnPhaseView();
 		TurnPhaseHandler tph = new TurnPhaseHandler(tpv);
@@ -85,10 +86,13 @@ public class GameFrame extends JFrame {
 				}
 			}
 		});
+		
+		InfoPanel info = new InfoPanel();
+		con.add(info, BorderLayout.EAST);
 
 		boardPanel = new BoardPanel(game);
 		boardPanel.setPreferredSize(new Dimension(1000, 850));
-		getContentPane().add(boardPanel, BorderLayout.CENTER);
+		con.add(boardPanel, BorderLayout.CENTER);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		
