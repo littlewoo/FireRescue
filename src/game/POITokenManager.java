@@ -111,9 +111,13 @@ public class POITokenManager implements POIEventListener, TurnPhaseListener {
 	private void placeNextTokenRandomly() {
 		if (nextPOI < stack.size()) {
 			POIToken pt = stack.get(nextPOI);
-			int x = roller.rollDie(8, false).roll;
-			int y = roller.rollDie(6, false).roll;
-			board.addPOIToken(new Point(x, y), pt, poiReplacesFire);
+			Point p;
+			do {
+				int x = roller.rollDie(8, false).roll;
+				int y = roller.rollDie(6, false).roll;
+				p = new Point(x, y);
+			} while (board.getPOITokenAt(p) != null);
+			board.addPOIToken(p, pt, poiReplacesFire);
 			nextPOI ++;
 		}
 	}
