@@ -64,15 +64,13 @@ public class Game implements TurnTaker, ActionPerformer {
 	 *  be placed on fire. */
 	private static final boolean POI_REPLACES_FIRE = true;
 	/** the total number of POI tokens in the game */
-	private static final int POI_COUNT = 15;
+	private static final int POI_VICTIM_COUNT = 10;
 	/** the number of blank tokens for each victim token */
-	private static final double POI_RATIO = 0.5;
+	private static final int POI_BLANK_COUNT = 5;
 	/** the number of POI tokens on the board at the start of the game */
 	private static final int INITIAL_POI_COUNT = 3;
-	/** all of the POI tokens in the game */
-	private List<POIToken> pointsOfInterest;
-	/** the index of the next POI token to be placed */
-	private int nextPOI;
+	/** the manager for POI tokens */
+	private final POITokenManager poiTokenManager;
 
 	/** the index of the current player */
 	private int currentPlayerIndex;
@@ -98,17 +96,11 @@ public class Game implements TurnTaker, ActionPerformer {
 		createPlayers(data);		
 		board = new Board(WIDTH, HEIGHT);
 		diceRoller = new DiceRoller();
-		pointsOfInterest = 
-				POIQuestionMarkToken.getPOITokenStack(POI_COUNT, POI_RATIO, diceRoller);
-		nextPOI = 0;
-		board.addPOIEventListener(new POIEventListener() {
-			@Override
-			public void onPOIEvent(POIEvent e) {
-				if (e.type == POIEvent.POIEventType.RESCUED) {
-					placePOITokenRandomly();
-				}
-			}
-		});
+		poiTokenManager = 
+				new POITokenManager(POI_REPLACES_FIRE, POI_VICTIM_COUNT,
+									POI_BLANK_COUNT, board, diceRoller);
+		board.addPOIEventListener(poiTokenManager);
+		addTurnPhaseListener(poiTokenManager);
 	}
 	
 	/**
@@ -178,29 +170,14 @@ public class Game implements TurnTaker, ActionPerformer {
 	 * Place the POI tokens on the board
 	 */
 	public void placeInitialPOITokens() {
-		for (int i=0; i<INITIAL_POI_COUNT; i++) {
-			placePOITokenRandomly();
-		}
+		poiTokenManager.placeInitialTokens(INITIAL_POI_COUNT);
 	}
-	
-	/**
-	 * Place a POI token randomly. 
-	 */
-	public void placePOITokenRandomly() {
-		if (nextPOI < pointsOfInterest.size()) {
-			POIToken pt = pointsOfInterest.get(nextPOI);
-			int x = diceRoller.rollDie(8, false).roll;
-			int y = diceRoller.rollDie(6, false).roll;
-			board.addPOIToken(new Point(x, y), pt, POI_REPLACES_FIRE);
-			nextPOI ++;
-		}
-	}
-
 	/**
 	 * Respond to a signal to end the current player's turn
 	 */
 	@Override
 	public void onEndTurn() {
+		board.checkRescuedVictims();
 		advanceFire();
 		currentPlayerIndex ++;
 		currentPlayerIndex = currentPlayerIndex % players.size();
@@ -223,6 +200,7 @@ public class Game implements TurnTaker, ActionPerformer {
 		board.smokeIntoFire();
 		alertTurnPhaseListeners(TurnPhase.CLEAR_EDGE_FIRE);
 		board.removeFireFromEdges();
+		alertTurnPhaseListeners(TurnPhase.PLACE_POI);
 		alertTurnPhaseListeners(TurnPhase.MOVE);
 	}
 
@@ -366,7 +344,7 @@ public class Game implements TurnTaker, ActionPerformer {
 		if (t instanceof POIQuestionMarkToken) {
 			POIFaceToken ft = board.flipPOIToken((POIQuestionMarkToken) t);
 			if (ft instanceof BlankPOIToken) {
-				placePOITokenRandomly();
+				board.rescueVictim(ft);
 			}
 		}
 		return true;

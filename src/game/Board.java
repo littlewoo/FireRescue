@@ -66,8 +66,7 @@ public class Board {
 	/** Listeners for changes to the tokens in the game. */
 	private List<TokenChangeListener> tokenChangeListeners;
 	/** listeners for POI token events */
-	private List<POIEventListener> poiEventListeners;
-	
+	private List<POIEventListener> poiEventListeners; 
 
 	/**
 	 * Construct a new Board.
@@ -651,10 +650,19 @@ public class Board {
 		} 
 		removePOIToken(t);
 		addPOIToken(loc, t, false);
-		if (t instanceof VictimPOIToken) {
-			checkRescuedVictim((VictimPOIToken) t);
-		}
 		return true;
+	}
+	
+	/**
+	 * Check whether any victims have been rescued, and alert listeners if they
+	 * have.
+	 */
+	public void checkRescuedVictims() {
+		for (POIToken t : poiLayer.getAllTokens()) {
+			if (t instanceof VictimPOIToken) {
+				checkRescuedVictim((VictimPOIToken) t);
+			}
+		}
 	}
 	
 	/**
@@ -663,7 +671,7 @@ public class Board {
 	 * 
 	 * @param v the victim token to check
 	 */
-	private void checkRescuedVictim(VictimPOIToken v) {
+	public void checkRescuedVictim(VictimPOIToken v) {
 		Point p = tokenLocs.get(v);
 		if (edges.contains(p)) {
 			rescueVictim(v);
@@ -675,7 +683,7 @@ public class Board {
 	 * 
 	 * @param t the victim token to rescue
 	 */
-	private void rescueVictim(VictimPOIToken t) {
+	public void rescueVictim(POIFaceToken t) {
 		removePOIToken(t);
 		alertPOIEventListeners(new POIEvent(t, POIEvent.POIEventType.RESCUED));
 	}

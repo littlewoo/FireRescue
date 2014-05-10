@@ -66,33 +66,14 @@ public class GameFrame extends JFrame {
 		APHandler aph = new APHandler(apv);
 		game.addAPListener(aph);
 		
-		game.addPOIEventListener(new POIEventListener() {
-			private int rescued = 0;
-			private int killed = 0;
-			
-			@Override
-			public void onPOIEvent(POIEvent e) {
-				switch (e.type) {
-					case RESCUED:
-						rescued ++;
-						System.out.println("Rescued: " + rescued);
-						break;
-					case KILLED:
-						killed ++;
-						System.out.println("Killed: " + killed);
-						break;
-					default:
-						break;
-				}
-			}
-		});
-		
 		InfoPanel info = new InfoPanel();
 		con.add(info, BorderLayout.EAST);
+		game.addPOIEventListener(info);
 
 		boardPanel = new BoardPanel(game);
 		boardPanel.setPreferredSize(new Dimension(1000, 850));
 		con.add(boardPanel, BorderLayout.CENTER);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		

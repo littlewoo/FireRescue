@@ -41,6 +41,7 @@ public class TurnPhaseHandler implements TurnPhaseListener {
 		texts.put(TurnPhase.ADVANCE_FIRE, "Advance fire");
 		texts.put(TurnPhase.SMOKE_TO_FIRE, "Smoke to fire");
 		texts.put(TurnPhase.CLEAR_EDGE_FIRE, "Clearing fire from edge");
+		texts.put(TurnPhase.PLACE_POI, "Replenish POI tokens");
 	}
 
 	private TurnPhaseView turnPhaseView;

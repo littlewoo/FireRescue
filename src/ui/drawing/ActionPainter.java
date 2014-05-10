@@ -56,7 +56,6 @@ public class ActionPainter {
 		g.setColor(markerColour);
 		for (Point p : actionLocs.values()) {
 			g.fillOval(p.x-20, p.y-20, 40, 40);
-			System.out.println("Drawing action at " + p);
 		}
 	}
 

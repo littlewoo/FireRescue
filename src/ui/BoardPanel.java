@@ -108,6 +108,7 @@ public class BoardPanel extends TokenGridPanel
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
+		System.out.println("Painting board panel");
         Graphics2D g2 = (Graphics2D) g;
         super.paintComponent(g2);
         actionPainter.paintAll(g2);

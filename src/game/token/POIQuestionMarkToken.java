@@ -20,11 +20,6 @@
  */
 package game.token;
 
-import interfaces.ListShuffler;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import ui.drawing.POITokenPainter;
 import ui.drawing.TokenPainter;
 
@@ -41,7 +36,7 @@ public class POIQuestionMarkToken implements POIToken {
 	 * 
 	 * @param reverse the token on the reverse of this one
 	 */
-	private POIQuestionMarkToken(ReverseType r) {
+	public POIQuestionMarkToken(POIFaceType r) {
 		switch (r) {
 			case BLANK:
 				reverse = new BlankPOIToken(this);
@@ -66,31 +61,5 @@ public class POIQuestionMarkToken implements POIToken {
 	@Override
 	public POIFaceToken flip() {
 		return reverse;
-	}
-
-	/**
-	 * Create all the POI tokens for use in the game. 
-	 * 
-	 * @param count the number of POI tokens to generate
-	 * @param ratio the number of blank POI tokens to generate for each victim
-	 * @return the list of POI tokens, in shuffled order.
-	 */
-	public static List<POIToken> getPOITokenStack(int count, double ratio,
-												  ListShuffler shuffler) {
-		List<POIToken> result = new ArrayList<POIToken>();
-		int blanks = (int) (((double) count) / (ratio + 1));
-		for (int i=0; i<blanks; i++) {
-			result.add(new POIQuestionMarkToken(ReverseType.BLANK));
-		}
-		int victims = count - blanks;
-		for (int i=0; i<victims; i++) {
-			result.add(new POIQuestionMarkToken(ReverseType.VICTIM));
-		}
-		result = shuffler.shuffle(result);
-		return result;
-	}
-	
-	private enum ReverseType {
-		BLANK, VICTIM;
 	}
 }

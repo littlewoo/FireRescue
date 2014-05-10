@@ -1,5 +1,5 @@
 /**
- *  File name: POIToken.java
+ *  File name: TokenStackToken.java
  *
  *  Copyright 2014: John Littlewood
  *
@@ -20,14 +20,46 @@
  */
 package game.token;
 
+import ui.drawing.TokenPainter;
+import ui.drawing.TokenStackPainter;
+
 /**
  *
  * @author littlewoo
  */
-public interface POIToken extends FlippableToken {
-
+public class TokenStackToken implements Token {
 	
-	public enum POIFaceType {
-		BLANK, VICTIM;
+	private int count;
+	private final TokenStackPainter painter;
+	
+	public TokenStackToken(Token t) {
+		count = 0;
+		painter = new TokenStackPainter(t.getPainter());
 	}
+	
+	public void setCount(int val) {
+		this.count = val;
+		painter.setCount(val);
+	}
+	
+	public void increment() {
+		setCount(count + 1);
+	}
+	
+	public void decrement() {
+		setCount(count - 1);
+	}
+	
+	public int getCount() {
+		return count;
+	}
+
+	/* (non-Javadoc)
+	 * @see game.token.Token#getPainter()
+	 */
+	@Override
+	public TokenPainter getPainter() {
+		return painter;
+	}
+
 }

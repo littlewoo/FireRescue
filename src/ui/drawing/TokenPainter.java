@@ -24,6 +24,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
 
 import ui.BoardPanel;
 
@@ -59,8 +60,6 @@ public abstract class TokenPainter {
 	 * Draw a circular background of a token
 	 * 
 	 * @param g the graphics to draw on
-	 * @param x the x location of the centre of the token
-	 * @param y the y location of the centre of the token
 	 * @param diameterPct the diameter of the circle, as a percentage of the 
 	 * 						size of the cell
 	 * @param bgColour the background colour of the circle
@@ -68,13 +67,40 @@ public abstract class TokenPainter {
 	 */
 	protected void drawCircleToken(Graphics2D g, int diameterPct,
 								   Color bgColour, Color borderColour) {
+		drawCircleToken(g, new Point(0,0), diameterPct, 20, bgColour, borderColour);
+	}
+	
+	/**
+	 * Draw a circular background of a token, at an offset from the centre of
+	 * the cell
+	 * 
+	 * @param g the graphics to draw on
+	 * @param loc the centre of the token, relative to the location of the
+	 * 				centre of the cell, with the values being a percentage of 
+	 * 				the size of a cell
+	 * @param borderThickness the thickness of the border, as a percentage of
+	 * 						  the diameter of the circle
+	 * @param diameterPct the diameter of the circle, as a percentage of the 
+	 * 					  size of the cell
+	 * @param bgColour the background colour of the circle
+	 * @param borderColour the border colour of the circle
+	 */
+	protected void drawCircleToken(Graphics2D g, 
+								   Point loc, 
+								   int diameterPct, 
+								   int borderThickness,
+								   Color bgColour, 
+								   Color borderColour) {
+		int xOffset = loc.x * CELL_SIZE / 100;
+		int yOffset = loc.y * CELL_SIZE / 100;
 		int diameter = CELL_SIZE * diameterPct / 100;
-		int cLeft = x - diameter/2;
-		int cTop = y - diameter/2;
+		int cLeft = (x + xOffset) - diameter / 2;
+		int cTop = (y + yOffset) - diameter / 2;
+		int absThickness = borderThickness * diameter / 100;
 		
 		g.setColor(bgColour);
 		g.fillOval(cLeft, cTop, diameter, diameter);
-		g.setStroke(new BasicStroke(10));
+		g.setStroke(new BasicStroke(absThickness));
 		g.setColor(borderColour);
 		g.drawOval(cLeft, cTop, diameter, diameter);
 	}
