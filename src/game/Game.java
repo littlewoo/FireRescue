@@ -320,15 +320,27 @@ public class Game implements TurnTaker, ActionPerformer {
 		VictimPOIToken victim = board.getVictimAtPlayer(t);
 		for (Point p : possMoves) {
 			if (board.isFireAt(p)) {
-				result.add(new MoveIntoFireAction(player, p));
+				addAction(result, new MoveIntoFireAction(player, p));
 			} else {
-				result.add(new MoveAction(player, p));
+				addAction(result, new MoveAction(player, p));
 				if (victim != null) {
-					result.add(new MoveWithVictimAction(player, p, victim));
+					addAction(result, new MoveWithVictimAction(player, p, victim));
 				}
 			}
 		}
 		return new ActionCollection(result);
+	}
+	
+	/**
+	 * Check whether an action is valid, and if it is, add it to a list.
+	 * 
+	 * @param actionList the list of actions
+	 * @param action the action to be added
+	 */
+	private void addAction(List<Action> actionList, Action action) {
+		if (getCurrentPlayer().canPerformAction(action)) {
+			actionList.add(action);
+		}
 	}
 	
 	/**

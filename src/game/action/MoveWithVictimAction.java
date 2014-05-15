@@ -54,7 +54,7 @@ public class MoveWithVictimAction extends BaseMoveAction {
 	 */
 	@Override
 	public boolean performAction(ActionPerformer performer) {
-		boolean val = getPlayer().canPerformAction(getApCost());
+		boolean val = getPlayer().canPerformAction(this);
 		if (val) {
 			if (performer.moveVictimToken(victim, getLoc())) {
 				super.performAction(performer);

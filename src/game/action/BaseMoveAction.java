@@ -47,7 +47,7 @@ public abstract class BaseMoveAction extends Action {
 	 */
 	@Override
 	public boolean performAction(ActionPerformer performer) {
-		boolean val = getPlayer().performAction(getApCost());
+		boolean val = getPlayer().performAction(this);
 		if (val) {
 			performer.movePlayer(getPlayer(), getLoc());
 		}

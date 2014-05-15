@@ -20,6 +20,7 @@
  */
 package game;
 
+import game.action.Action;
 import game.token.PlayerToken;
 import interfaces.APListener;
 
@@ -39,7 +40,7 @@ public class Player {
 	private int ap;
 	
 	/** the number of AP the player gets at the beginning of each turn */
-	private static final int AP_EACH_TURN = 99;
+	private static final int AP_EACH_TURN = 4;
 	
 	/** the listeners for changes in AP */
 	private List<APListener> apListeners;
@@ -60,11 +61,11 @@ public class Player {
 	 * @param cost the AP cost of the action performed
 	 * @return true if the action was successful
 	 */
-	public boolean performAction(int cost) {
-		if (! canPerformAction(cost)) {
+	public boolean performAction(Action a) {
+		if (! canPerformAction(a)) {
 			return false;
 		}
-		ap -= cost;
+		ap -= a.getApCost();
 		alertAPListeners();
 		return true;
 	}
@@ -72,8 +73,8 @@ public class Player {
 	/**
 	 * @return true if the player is capable of the action 
 	 */
-	public boolean canPerformAction(int cost) {
-		return cost <= ap;
+	public boolean canPerformAction(Action action) {
+		return action.getApCost() <= ap;
 	}
 	
 	/**
