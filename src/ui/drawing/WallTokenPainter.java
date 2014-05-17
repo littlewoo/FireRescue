@@ -36,17 +36,15 @@ public class WallTokenPainter extends TokenPainter {
 	
 	private static final int WIDTH_PERCENTAGE = 100;
 	
-	@SuppressWarnings("unused")
 	private static final int THICKNESS = 5;
 	
+	/** the offsets for drawing the 4 walls */
 	private int north;
 	private int east;
 	private int south;
 	private int west;
 	
 	private final Set<Direction> directions;
-	
-	
 	
 	/**
 	 * Construct a new WallTokenPainter
@@ -68,7 +66,7 @@ public class WallTokenPainter extends TokenPainter {
 	@Override
 	public void draw(Graphics2D g) {
 		g.setColor(Color.WHITE);
-		g.setStroke(new BasicStroke(5));
+		g.setStroke(new BasicStroke(THICKNESS));
 		for (Direction dir : directions) {
 			switch (dir) {
 				case NORTH:

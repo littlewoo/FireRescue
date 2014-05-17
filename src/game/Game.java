@@ -22,12 +22,14 @@ package game;
 
 import game.Board.TokenChangeListener;
 import game.DiceRoller.DieResult;
+import game.Walls.Direction;
 import game.action.Action;
 import game.action.ActionCollection;
 import game.action.MoveAction;
 import game.action.MoveIntoFireAction;
 import game.action.MoveWithVictimAction;
 import game.token.BlankPOIToken;
+import game.token.DamageToken;
 import game.token.POIFaceToken;
 import game.token.POIQuestionMarkToken;
 import game.token.POIToken;
@@ -101,6 +103,13 @@ public class Game implements TurnTaker, ActionPerformer {
 									POI_BLANK_COUNT, board, diceRoller);
 		board.addPOIEventListener(poiTokenManager);
 		addTurnPhaseListener(poiTokenManager);
+	}
+	
+	public void addDamageToken() {
+		DamageToken t = new DamageToken(Direction.SOUTH);
+		t.addDamageToken();
+		t.addDamageToken();
+		board.addToken(new Point(1,1), t);
 	}
 	
 	/**

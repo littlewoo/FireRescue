@@ -89,7 +89,8 @@ public class Board {
 		walls = w;
 		for (int x=0; x<getWidth(); x++) {
 			for (int y=0; y<getHeight(); y++) {
-				addToken(new Point(x, y), new WallToken(w.getWalls(x, y)));
+				Point p = new Point(x, y);
+				addToken(p, new WallToken(w.getWalls(p)));
 			}
 		}
 	}
@@ -319,7 +320,7 @@ public class Board {
 					dir = Direction.EAST;
 				}
 			}
-			boolean passable = walls.isPassable(p1.x, p1.y, dir);
+			boolean passable = walls.isPassable(p1, dir);
 			boolean empty = playersLayer.getTokenAt(p2) == null;
 			return passable && empty;
 		} else {

@@ -21,7 +21,6 @@
 package ui;
 
 import game.Game;
-import interfaces.POIEventListener;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -103,5 +102,7 @@ public class GameFrame extends JFrame {
 		mntmAbout.setMnemonic(KeyEvent.VK_A);
 		mnHelp.add(mntmAbout);
 		setVisible(true);
+		
+		game.addDamageToken();
 	}
 }

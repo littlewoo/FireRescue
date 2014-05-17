@@ -35,24 +35,9 @@ public class Walls {
 	private Map<Point, Set<Direction>> walls;
 	
 	/**
-	 * <p>Constructor for walls. The walls are represented as follows: </p>
-	 * 
-	 *         1       2       3
-	 *  
-	 *      +--h00--+--h10--+--h20--+   <br />
-	 *      |       |       |       |   <br />
-	 *  1  v00     v10     v20     v30  <br />
-	 *      |       |       |       |   <br />
-	 *      +--h01--+--h11--+--h21--+   <br />
-	 *      |       |       |       |   <br />
-	 *  2  v01     v11     v21     v31  <br />
-	 *      |       |       |       |   <br />
-	 *      +--h02--+--h12--+--h22--+   <br />
-	 *      |       |       |       |   <br />
-	 *  3  v02     v12     v22     v32  <br />
-	 *      |       |       |       |   <br />
-	 *      +--h03--+--h13--+--h23--+   <br />
-	 *   
+	 * <p>Constructor for walls. The walls are represented as each cell, and the
+	 * directions from that cell that are walled. Be aware: this means that 
+	 * walls can be 1-way!
 	 * 
 	 * @param horizontal the horizontal set of walls
 	 * @param vertical the vertical set of walls
@@ -68,30 +53,25 @@ public class Walls {
 	 * representing a square, and a direction, to check whether a move in that
 	 * direction is possible or not.
 	 * 
-	 * @param x the x coordinate of the square to check (between 1 and the width 
-	 * 			of the board, inclusive)
-	 * @param y the y coordinate of the square to check (between 1 and the 
-	 * 			height of the board, inclusive)
+	 * @param p the location of the cell
 	 * @param dir the direction to check
 	 * @return true if the space is passable
 	 * 
 	 * @throws ArrayIndexOutOfBoundsException if x or y are outside the bounds 
 	 * 			of the board
 	 */
-	public boolean isPassable(int x, int y, Direction dir) {
-		Point p = new Point(x, y);
+	public boolean isPassable(Point p, Direction dir) {
 		return !walls.get(p).contains(dir);
 	}
 	
 	/**
 	 * Get the directions which are blocked by walls from a square
 	 * 
-	 * @param x the x coordinate of the square to check
-	 * @param y the y coordinate of the square to check
+	 * @param p the location of the cell to get the walls for
 	 * @return the directions which are blocked by walls from a square
 	 */
-	public Set<Direction> getWalls(int x, int y) {
-		return walls.get(new Point(x, y));
+	public Set<Direction> getWalls(Point p) {
+		return walls.get(p);
 	}
 	
 	
